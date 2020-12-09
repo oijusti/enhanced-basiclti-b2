@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti.services;
 
 import java.util.List;
@@ -47,266 +47,267 @@ import org.oscelot.blackboard.lti.resources.SettingDef;
 
 import com.spvsoftwareproducts.blackboard.utils.B2Context;
 
-
 public abstract class Service {
 
-  private B2Context b2Context = null;
-  private Tool tool = null;
-  protected List<Resource> resources = null;
-  private OAuthMessage message = null;
+    private B2Context b2Context = null;
+    private Tool tool = null;
+    protected List<Resource> resources = null;
+    protected boolean isSigned = true;
+    private OAuthMessage message = null;
 
-  public Service(B2Context b2Context) {
+    public Service(B2Context b2Context) {
 
-    this.b2Context = b2Context;
+        this.b2Context = b2Context;
 
-  }
-
-  public abstract String getId();
-
-  public abstract String getName();
-
-  public String getClassName() {
-
-    return getSettingValue(Constants.SERVICE_CLASS);
-
-  }
-
-  public String getIsEnabled() {
-
-    return getSettingValue(null, Constants.DATA_FALSE);
-
-  }
-
-  public String getIsUnsigned() {
-
-    return getSettingValue(Constants.SERVICE_UNSIGNED, Constants.DATA_FALSE);
-
-  }
-
-  public B2Context getB2Context() {
-
-    return this.b2Context;
-
-  }
-
-  public Tool getTool() {
-
-    return this.tool;
-
-  }
-
-  public void setTool(Tool tool) {
-
-    this.tool = tool;
-
-  }
-
-  public OAuthMessage getMessage() {
-    return this.message;
-  }
-
-  public void setMessage(OAuthMessage message) {
-    this.message = message;
-  }
-
-  public abstract List<Resource> getResources();
-
-  public List<SettingDef> getSettings() {
-
-    List<SettingDef> settings = new ArrayList<SettingDef>();
-
-    getResources();
-    Resource resource;
-    for (Iterator<Resource> iter = this.resources.iterator(); iter.hasNext();) {
-      resource = iter.next();
-      settings.addAll(resource.getSettings());
     }
 
-    return settings;
+    public abstract String getId();
 
-  }
+    public abstract String getName();
 
-  public String getServicePath() {
+    public String getClassName() {
 
-    return this.b2Context.getServerUrl() + this.b2Context.getPath() + Constants.RESOURCE_PATH;
+        return getSettingValue(Constants.SERVICE_CLASS);
 
-  }
-
-  public static String getSettingValue(B2Context b2Context, String id, String name, String defaultValue) {
-
-    String setting = Constants.SERVICE_PARAMETER_PREFIX + "." + id;
-    if ((name != null) && (name.length() > 0)) {
-      setting += "." + name;
     }
 
-    return b2Context.getSetting(setting, defaultValue);
+    public String getIsEnabled() {
 
-  }
+        return getSettingValue(null, Constants.DATA_FALSE);
 
-  public String getSetting(String name, String defaultValue) {
-
-    return getSettingValue(this.b2Context, this.getId(),
-       Constants.SERVICE_SETTING + "." + name, defaultValue);
-
-  }
-
-  public void setSetting(String name, String value) {
-
-    String setting = Constants.SERVICE_PARAMETER_PREFIX + "." + this.getId();
-    this.b2Context.setSetting(setting + "." + Constants.SERVICE_SETTING + "." + name, value);
-
-  }
-
-  public static Service getServiceFromId(B2Context b2Context, String id) {
-
-    String className = getSettingValue(b2Context, id, Constants.SERVICE_CLASS, "");
-
-    return getServiceFromClassName(b2Context, className);
-
-  }
-
-  public static Service getServiceFromClassName(B2Context b2Context, String className) {
-
-    Class serviceClass;
-    Service service = null;
-    if (className.length() > 0) {
-      try {
-        serviceClass = Class.forName(className);
-        Constructor constructor = serviceClass.getDeclaredConstructor(B2Context.class);
-        constructor.setAccessible(true);
-        service = (Service)constructor.newInstance(b2Context);
-      } catch (ClassNotFoundException e) {
-        service = null;
-        B2Context.log(true, "Unable to find class: " + className);
-      } catch (NoSuchMethodException e) {
-        service = null;
-        B2Context.log(true, "Cannot create service instance: " + e.getMessage());
-      } catch (InvocationTargetException e) {
-        service = null;
-        B2Context.log(true, "Cannot create service instance: " + e.getMessage());
-      } catch (InstantiationException e) {
-        service = null;
-        B2Context.log(true, "Cannot create service instance: " + e.getMessage());
-      } catch (java.lang.IllegalAccessException e) {
-        service = null;
-        B2Context.log(true, "Cannot access service instance: " + e.getMessage());
-      }
     }
 
-    return service;
+    public B2Context getB2Context() {
 
-  }
+        return this.b2Context;
 
-  public String parseValue(String value) {
+    }
 
-    if ((this.tool != null) && this.tool.getHasService(this.getId()).equals(Constants.DATA_TRUE)) {
-      if (this.resources == null) {
-        this.resources = this.getResources();
-      }
-      if (this.resources != null) {
+    public Tool getTool() {
+
+        return this.tool;
+
+    }
+
+    public void setTool(Tool tool) {
+
+        this.tool = tool;
+
+    }
+
+    public OAuthMessage getMessage() {
+        return this.message;
+    }
+
+    public void setMessage(OAuthMessage message) {
+        this.message = message;
+    }
+
+    public abstract List<Resource> getResources();
+
+    public List<SettingDef> getSettings() {
+
+        List<SettingDef> settings = new ArrayList<SettingDef>();
+
+        getResources();
+        Resource resource;
         for (Iterator<Resource> iter = this.resources.iterator(); iter.hasNext();) {
-          Resource resource = iter.next();
-          value = resource.parseValue(value);
+            resource = iter.next();
+            settings.addAll(resource.getSettings());
         }
-      }
+
+        return settings;
+
     }
 
-    return value;
+    public String getServicePath() {
 
-  }
+        return this.b2Context.getServerUrl() + this.b2Context.getPath() + Constants.RESOURCE_PATH;
 
-  private String getSettingValue(String name) {
+    }
 
-    return getSettingValue(name, "");
+    public static String getSettingValue(B2Context b2Context, String id, String name, String defaultValue) {
 
-  }
+        String setting = Constants.SERVICE_PARAMETER_PREFIX + "." + id;
+        if ((name != null) && (name.length() > 0)) {
+            setting += "." + name;
+        }
 
-  private String getSettingValue(String name, String defaultValue) {
+        return b2Context.getSetting(setting, defaultValue);
 
-    return getSettingValue(this.b2Context, this.getId(), name, defaultValue);
+    }
 
-  }
+    public String getSetting(String name, String defaultValue) {
 
-  public boolean checkTool(String toolId) {
+        return getSettingValue(this.b2Context, this.getId(),
+                Constants.SERVICE_SETTING + "." + name, defaultValue);
 
-    boolean ok = false;
+    }
 
-    Tool aTool = null;
-    Map<String,String> authHeaders = Utils.getAuthorizationHeaders(this.message);
-    String consumerKey = authHeaders.get("oauth_consumer_key");
+    public void setSetting(String name, String value) {
 
-    if (toolId != null) {
-      aTool = new Tool(this.b2Context, toolId);
-      if (aTool.getIsSystemTool()) {
-        if (!this.getIsUnsigned().equals(Constants.DATA_TRUE) && aTool.getLaunchGUID().equals(consumerKey)) {
-          ok = checkSignature(aTool.getLaunchGUID(), aTool.getLaunchSecret());
+        String setting = Constants.SERVICE_PARAMETER_PREFIX + "." + this.getId();
+        this.b2Context.setSetting(setting + "." + Constants.SERVICE_SETTING + "." + name, value);
+
+    }
+
+    public static Service getServiceFromId(B2Context b2Context, String id) {
+
+        String className = getSettingValue(b2Context, id, Constants.SERVICE_CLASS, "");
+
+        return getServiceFromClassName(b2Context, className);
+
+    }
+
+    public static Service getServiceFromClassName(B2Context b2Context, String className) {
+
+        Class serviceClass;
+        Service service = null;
+        if (className.length() > 0) {
+            try {
+                serviceClass = Class.forName(className);
+                Constructor constructor = serviceClass.getDeclaredConstructor(B2Context.class);
+                constructor.setAccessible(true);
+                service = (Service) constructor.newInstance(b2Context);
+            } catch (ClassNotFoundException e) {
+                service = null;
+                B2Context.log(true, "Unable to find class: " + className);
+            } catch (NoSuchMethodException e) {
+                service = null;
+                B2Context.log(true, "Cannot create service instance: " + e.getMessage());
+            } catch (InvocationTargetException e) {
+                service = null;
+                B2Context.log(true, "Cannot create service instance: " + e.getMessage());
+            } catch (InstantiationException e) {
+                service = null;
+                B2Context.log(true, "Cannot create service instance: " + e.getMessage());
+            } catch (java.lang.IllegalAccessException e) {
+                service = null;
+                B2Context.log(true, "Cannot access service instance: " + e.getMessage());
+            }
+        }
+
+        return service;
+
+    }
+
+    public String parseValue(String value) {
+
+        if ((this.tool != null) && this.tool.getHasService(this.getId()).equals(Constants.DATA_TRUE)) {
+            if (this.resources == null) {
+                this.resources = this.getResources();
+            }
+            if (this.resources != null) {
+                for (Iterator<Resource> iter = this.resources.iterator(); iter.hasNext();) {
+                    Resource resource = iter.next();
+                    value = resource.parseValue(value);
+                }
+            }
+        }
+
+        return value;
+
+    }
+
+    private String getSettingValue(String name) {
+
+        return getSettingValue(name, "");
+
+    }
+
+    private String getSettingValue(String name, String defaultValue) {
+
+        return getSettingValue(this.b2Context, this.getId(), name, defaultValue);
+
+    }
+
+    public boolean checkTool(String toolId, String body) {
+
+        boolean ok = false;
+
+        Tool aTool = null;
+        Map<String, String> authHeaders = Utils.getAuthorizationHeaders(this.message);
+        String consumerKey = authHeaders.get("oauth_consumer_key");
+
+        if (toolId != null) {
+            aTool = new Tool(this.b2Context, toolId);
+            if (aTool.getIsSystemTool()) {
+                if (this.isSigned && aTool.getLaunchGUID().equals(consumerKey)) {
+                    ok = checkSignature(aTool.getLaunchGUID(), aTool.getLaunchSecret());
+                } else {
+                    ok = !this.isSigned;
+                }
+            }
         } else {
-          ok = this.getIsUnsigned().equals(Constants.DATA_TRUE);
+            List<String> secrets = new ArrayList<String>();
+            ToolList toolList = new ToolList(this.b2Context, false);
+            for (Iterator<Tool> iter = toolList.getList().iterator(); iter.hasNext();) {
+                aTool = iter.next();
+                if (aTool.getIsSystemTool() && aTool.getLaunchGUID().equals(consumerKey) && !secrets.contains(aTool.getLaunchSecret())) {
+                    secrets.add(aTool.getLaunchSecret());
+                    ok = checkSignature(aTool.getLaunchGUID(), aTool.getLaunchSecret());
+                    if (ok) {
+                        break;
+                    }
+                }
+            }
+            if (!ok && !this.isSigned && (aTool != null)) {
+                ok = true;
+            }
         }
-      }
-    } else {
-      List<String> secrets = new ArrayList<String>();
-      ToolList toolList = new ToolList(this.b2Context, false);
-      for (Iterator<Tool> iter = toolList.getList().iterator(); iter.hasNext();) {
-        aTool = iter.next();
-        if (aTool.getIsSystemTool() && aTool.getLaunchGUID().equals(consumerKey) && !secrets.contains(aTool.getLaunchSecret())) {
-          secrets.add(aTool.getLaunchSecret());
-          ok = checkSignature(aTool.getLaunchGUID(), aTool.getLaunchSecret());
-          if (ok) {
-            break;
-          }
+        if (ok && (body != null) && (body.length() > 0)) {
+            ok = Utils.checkBodyHash(authHeaders, body);
         }
-      }
-      if (!ok && this.getIsUnsigned().equals(Constants.DATA_TRUE) && (aTool != null)) {
-        ok = true;
-      }
-    }
-    if (ok) {
-      this.tool = aTool;
-    }
+        if (ok) {
+            ok = aTool.getHasService(this.getId()).equals(Constants.DATA_TRUE);
+        }
+        if (ok) {
+            this.tool = aTool;
+        }
 
-    return ok;
+        return ok;
 
-  }
-
-  private boolean checkSignature(String consumerKey, String secret) {
-
-    boolean ok = false;
-
-    OAuthConsumer oAuthConsumer;
-    OAuthAccessor oAuthAccessor;
-    OAuthValidator validator = new SimpleOAuthValidator();
-    oAuthConsumer = new OAuthConsumer(Constants.OAUTH_CALLBACK, consumerKey, secret, null);
-    oAuthAccessor = new OAuthAccessor(oAuthConsumer);
-    try {
-      this.message.validateMessage(oAuthAccessor, validator);
-      ok = true;
-    } catch (URISyntaxException e) {
-    } catch (OAuthException e) {
-    } catch (IOException e) {
     }
 
-    return ok;
+    private boolean checkSignature(String consumerKey, String secret) {
 
-  }
+        boolean ok = false;
 
-  @Override
-  public String toString() {
+        OAuthConsumer oAuthConsumer;
+        OAuthAccessor oAuthAccessor;
+        OAuthValidator validator = new SimpleOAuthValidator();
+        oAuthConsumer = new OAuthConsumer(Constants.OAUTH_CALLBACK, consumerKey, secret, null);
+        oAuthAccessor = new OAuthAccessor(oAuthConsumer);
+        try {
+            this.message.validateMessage(oAuthAccessor, validator);
+            ok = true;
+        } catch (URISyntaxException e) {
+        } catch (OAuthException e) {
+        } catch (IOException e) {
+        }
 
-    StringBuilder result = new StringBuilder();
-    String newLine = System.getProperty("line.separator");
+        return ok;
 
-    result.append(this.getClass().getName());
-    result.append(" Object {");
-    result.append(newLine);
+    }
 
-    result.append("  Name: ").append(this.getName()).append(newLine);
-    result.append("  Class: ").append(this.getClassName()).append(newLine);
-    result.append("  Enabled: ").append(this.getIsEnabled()).append(newLine);
-    result.append("  Unsigned: ").append(this.getIsUnsigned()).append(newLine);
-    result.append("}");
+    @Override
+    public String toString() {
 
-    return result.toString();
+        StringBuilder result = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
 
-  }
+        result.append(this.getClass().getName());
+        result.append(" Object {");
+        result.append(newLine);
+
+        result.append("  Name: ").append(this.getName()).append(newLine);
+        result.append("  Class: ").append(this.getClassName()).append(newLine);
+        result.append("  Enabled: ").append(this.getIsEnabled()).append(newLine);
+        result.append("  Signed: ").append(this.isSigned).append(newLine);
+        result.append("}");
+
+        return result.toString();
+
+    }
+
 }

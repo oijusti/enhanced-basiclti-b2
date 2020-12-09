@@ -5,10 +5,10 @@
     <description value="plugin.description" />
     <handle value="BasicLTI" />
     <default-locale value="en_US" />
-    <version value="3.2.2003" />
+    <version value="3.3.9" />
     <webapp-type value="javaext" />
     <requires>
-       <bbversion value="9.1.0" />
+      <bbversion value="9.1.100401.0" />
       <plugin-versions>
         <plugin-version min="10.1" handle="assessment" vendor="bb" />
       </plugin-versions>
@@ -132,7 +132,13 @@
       <permission type="persist" name="NavigationItem" actions="create,modify,delete" />
       <permission type="java.lang.RuntimePermission" name="injectRenderingHook" />
       <permission type="java.lang.reflect.ReflectPermission" name="suppressAccessChecks" />
-      <permission type="java.io.FilePermission" name="&amp;lt;&amp;lt;ALL FILES&amp;gt;&amp;gt;" actions="read,write,delete" />
+      <!-- File Permissions -->
+      <permission type="java.io.FilePermission" name="${java.home}/-" actions="read" />
+      <permission type="java.io.FilePermission" name="BB_HOME/logs/-" actions="read,write" />
+      <permission type="java.io.FilePermission" name="BB_HOME/apps/tomcat/temp/-"  actions="read,write,delete" />
+      <permission type="java.io.FilePermission" name="BB_CONTENT/-" actions="read,write,delete" />
+      <!-- The following are extreemly promiscuous permissions. Use the above instead. -->
+      <!-- <permission type="java.io.FilePermission" name="&amp;lt;&amp;lt;ALL FILES&amp;gt;&amp;gt;" actions="read,write,delete" /> -->
     </permissions>
     <required-webservices>
       <tool-login>

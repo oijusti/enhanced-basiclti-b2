@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti.resources;
 
 import blackboard.servlet.tags.ngui.datacollection.fields.SimpleInputTag;
@@ -25,77 +25,76 @@ import blackboard.servlet.tags.ngui.datacollection.fields.SimpleInputTag;
 public class SettingDef {
 
 // Default settings
-  private String name;
-  private String title;
-  private String description;
-  private SimpleInputTag.Type type;
-  private int size;
-  private String defaultValue;
+    private String name;
+    private String title;
+    private String description;
+    private SimpleInputTag.Type type;
+    private int size;
+    private String defaultValue;
 
+    public SettingDef(String name, String title, String description, SimpleInputTag.Type type, int size) {
 
-  public SettingDef(String name, String title, String description, SimpleInputTag.Type type, int size) {
+        this(name, title, description, type, size, "");
 
-    this(name, title, description, type, size, "");
+    }
 
-  }
+    public SettingDef(String name, String title, String description, SimpleInputTag.Type type, int size, String defaultValue) {
 
-  public SettingDef(String name, String title, String description, SimpleInputTag.Type type, int size, String defaultValue) {
+        this.name = name;
+        this.title = title;
+        this.description = description;
+        this.type = type;
+        this.size = size;
+        this.defaultValue = defaultValue;
 
-    this.name = name;
-    this.title = title;
-    this.description = description;
-    this.type = type;
-    this.size = size;
-    this.defaultValue = defaultValue;
+    }
 
-  }
+    public String getName() {
+        return this.name;
+    }
 
-  public String getName() {
-    return this.name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public String getTitle() {
+        return this.title;
+    }
 
-  public String getTitle() {
-    return this.title;
-  }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
+    public String getDescription() {
+        return this.description;
+    }
 
-  public String getDescription() {
-    return this.description;
-  }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+    public SimpleInputTag.Type getType() {
+        return this.type;
+    }
 
-  public SimpleInputTag.Type getType() {
-    return this.type;
-  }
+    public void setType(SimpleInputTag.Type type) {
+        this.type = type;
+    }
 
-  public void setType(SimpleInputTag.Type type) {
-    this.type = type;
-  }
+    public int getSize() {
+        return this.size;
+    }
 
-  public int getSize() {
-    return this.size;
-  }
+    public void setSize(int size) {
+        this.size = size;
+    }
 
-  public void setSize(int size) {
-    this.size = size;
-  }
+    public String getDefaultValue() {
+        return this.defaultValue;
+    }
 
-  public String getDefaultValue() {
-    return this.defaultValue;
-  }
-
-  public void setDefaultValue(String defaultValue) {
-    this.defaultValue = defaultValue;
-  }
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 
 }

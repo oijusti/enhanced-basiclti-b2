@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,57 +17,56 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti;
 
 import com.google.gson.annotations.SerializedName;
 
-
 public class ContentItemPlacement {
 
-  @SerializedName("@type")
-  private String type;
-  private String presentationDocumentTarget = "";
-  private String windowTarget = "";
-  private Integer displayWidth = null;
-  private Integer displayHeight = null;
+    @SerializedName("@type")
+    private String type;
+    private String presentationDocumentTarget = "";
+    private String windowTarget = "";
+    private Integer displayWidth = null;
+    private Integer displayHeight = null;
 
-  public ContentItemPlacement() {
-  }
-
-  public String getType() {
-    return this.type;
-  }
-
-  public String getPresentationDocumentTarget() {
-    return this.presentationDocumentTarget;
-  }
-
-  public String getWindowTarget() {
-    String target = "_blank";
-    if (this.windowTarget.length() > 0) {
-      target = this.windowTarget;
+    public ContentItemPlacement() {
     }
-    return target;
-  }
 
-  public Integer getDisplayWidth() {
-    return this.displayWidth;
-  }
+    public String getType() {
+        return this.type;
+    }
 
-  public Integer getDisplayHeight() {
-    return this.displayHeight;
-  }
+    public String getPresentationDocumentTarget() {
+        return this.presentationDocumentTarget;
+    }
 
-  @Override
-  public String toString() {
+    public String getWindowTarget() {
+        String target = "_blank";
+        if (this.windowTarget.length() > 0) {
+            target = this.windowTarget;
+        }
+        return target;
+    }
 
-    return "@type: " + this.type + "\n" +
-           "displayTarget: " + this.presentationDocumentTarget + "\n" +
-           "windowTarget: " + this.getWindowTarget() + "\n" +
-           "displayWidth: " + String.valueOf(this.displayWidth) + "\n" +
-           "displayHeight: " + String.valueOf(this.displayHeight) + "\n";
+    public Integer getDisplayWidth() {
+        return this.displayWidth;
+    }
 
-  }
+    public Integer getDisplayHeight() {
+        return this.displayHeight;
+    }
+
+    @Override
+    public String toString() {
+
+        return "@type: " + this.type + "\n"
+                + "displayTarget: " + this.presentationDocumentTarget + "\n"
+                + "windowTarget: " + this.getWindowTarget() + "\n"
+                + "displayWidth: " + this.displayWidth + "\n"
+                + "displayHeight: " + this.displayHeight + "\n";
+
+    }
 
 }

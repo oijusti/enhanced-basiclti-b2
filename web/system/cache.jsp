@@ -1,6 +1,6 @@
 <%--
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,20 +19,18 @@
     Contact: stephen@spvsoftwareproducts.com
 --%>
 <%@page import="com.spvsoftwareproducts.blackboard.utils.B2Context,
-                org.oscelot.blackboard.utils.StringCache,
-                org.oscelot.blackboard.utils.StringCacheFile,
-                org.oscelot.blackboard.lti.Constants,
-                blackboard.platform.security.SecurityUtil" %>
+        org.oscelot.blackboard.utils.StringCache,
+        org.oscelot.blackboard.utils.StringCacheFile,
+        org.oscelot.blackboard.lti.Constants" %>
 <%
-  SecurityUtil.checkEntitlement("system.admin.VIEW");
-  B2Context b2Context = new B2Context(request);
+    B2Context b2Context = new B2Context(request);
 
-  StringCache xmlCache = StringCacheFile.getInstance(
-     b2Context.getSetting(Constants.CACHE_AGE_PARAMETER),
-     b2Context.getSetting(Constants.CACHE_CAPACITY_PARAMETER));
-  xmlCache.clear();
+    StringCache xmlCache = StringCacheFile.getInstance(
+            b2Context.getSetting(Constants.CACHE_AGE_PARAMETER),
+            b2Context.getSetting(Constants.CACHE_CAPACITY_PARAMETER));
+    xmlCache.clear();
 
-  String cancelUrl = b2Context.setReceiptOptions("tools.jsp",
-     b2Context.getResourceString("page.system.cache.message"), null);
-  response.sendRedirect(cancelUrl);
+    String cancelUrl = b2Context.setReceiptOptions("tools.jsp",
+            b2Context.getResourceString("page.system.cache.message"), null);
+    response.sendRedirect(cancelUrl);
 %>

@@ -1,6 +1,6 @@
 <%--
-    basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    basiclti - Building Block to provide support for LTI
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,10 +30,10 @@
   pageContext.setAttribute("errormsg", b2Context.getResourceString("page.receipt.error"));
 %>
 if (typeof(${vendor}_${handle}_openBasicLTI) == 'undefined') {
-  ${vendor}_${handle}_openBasicLTI = function(event) {
+  var ${vendor}_${handle}_openBasicLTI = function(event, el) {
     var ok = false;
     var resp;
-    var url = this.href;
+    var url = el.href;
     var query = '';
     var p = url.indexOf('?');
     var errormsg = '${errormsg}';
@@ -98,7 +98,7 @@ if (typeof(${vendor}_${handle}_openBasicLTI) == 'undefined') {
 }
 
 if (typeof(${vendor}_${handle}_popup) == 'undefined') {
-  ${vendor}_${handle}_popup = function(event) {
+  var ${vendor}_${handle}_popup = function(event) {
     var name = ${vendor}_${handle}_getParamValue(this.href, 'name');
     var url = ${vendor}_${handle}_getParamValue(this.href, 'url');
     var width = ${vendor}_${handle}_getParamValue(this.href, 'width');
@@ -117,7 +117,7 @@ if (typeof(${vendor}_${handle}_popup) == 'undefined') {
 }
 
 if (typeof(${vendor}_${handle}_overlay) == 'undefined') {
-  ${vendor}_${handle}_overlay = function(event) {
+  var ${vendor}_${handle}_overlay = function(event) {
     var name = ${vendor}_${handle}_getParamValue(this.href, 'name');
     var url = ${vendor}_${handle}_getParamValue(this.href, 'url');
     var width = ${vendor}_${handle}_getParamValue(this.href, 'width');
@@ -146,8 +146,33 @@ if (typeof(${vendor}_${handle}_overlay) == 'undefined') {
   }
 }
 
+if (typeof(${vendor}_${handle}_lightbox) == 'undefined') {
+  var ${vendor}_${handle}_lightbox = function(name, url, width, height) {
+    var dimensions = document.viewport.getDimensions();
+    if (!width || (width <= 0)) {
+      width = Math.round(dimensions.width * 0.8);
+    }
+    if (!height || (height <= 0)) {
+      height = Math.round(dimensions.height * 0.8);
+    }
+    var el_if = document.getElementById('${vendor}-${handle}-overlay');
+    var osc_lbParam = {
+      defaultDimensions : { w : width, h : height },
+      title : name,
+      openLink : el_if,
+      contents : '<iframe src="' + url + '" width="100%" height="' + height + '" />',
+      closeOnBodyClick : false,
+      showCloseLink : true,
+      useDefaultDimensionsAsMinimumSize : true,
+      ajax: false
+    };
+    var osc_lightbox = new lightbox.Lightbox(osc_lbParam);
+    osc_lightbox.open();
+  }
+}
+
 if (typeof(${vendor}_${handle}_getParamValue) == 'undefined') {
-  ${vendor}_${handle}_getParamValue = function(url, paramName) {
+  var ${vendor}_${handle}_getParamValue = function(url, paramName) {
     url = url.replace('&amp;', '&');
     var paramValue = '';
     var pos = url.indexOf('?');

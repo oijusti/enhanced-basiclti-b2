@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti;
 
 import java.util.Collections;
@@ -28,104 +28,106 @@ import com.google.gson.annotations.SerializedName;
 
 import com.spvsoftwareproducts.blackboard.utils.B2Context;
 
-
 public class ContentItem {
 
-  @SerializedName("@type")
-  private String type = "";
-  @SerializedName("@id")
-  private String id = "";
-  private String url = "";
-  private String text = "";
-  private String title = "";
-  private String mediaType = "";
-  private Image icon;
-  private Image thumbnail;
-  private ContentItemPlacement placementAdvice;
-  private LineItem lineItem;
-  private Map<String,String> custom = new HashMap<String,String>();
+    @SerializedName("@type")
+    private String type = "";
+    @SerializedName("@id")
+    private String id = "";
+    private String url = "";
+    private String text = "";
+    private String title = "";
+    private String mediaType = "";
+    private Image icon;
+    private Image thumbnail;
+    private ContentItemPlacement placementAdvice;
+    private LineItem lineItem;
+    private Map<String, String> custom = new HashMap<String, String>();
 
-  public ContentItem() {
-  }
-
-  public String getType() {
-    return this.type;
-  }
-
-  public String getId() {
-    return this.id;
-  }
-
-  public String getUrl() {
-    return this.url;
-  }
-
-  public String getText() {
-    return this.getText(false);
-  }
-
-  public String getText(boolean allowEmpty) {
-    String t = this.text;
-    if (!allowEmpty) {
-      if (t.length() <= 0) {
-        t = this.title;
-      }
-      if (t.length() <= 0) {
-        t = this.id;
-      }
-      if (t.length() <= 0) {
-        B2Context b2Context = new B2Context(null);
-        t = b2Context.getResourceString("title.default");
-      }
+    public ContentItem() {
     }
-    return t;
-  }
 
-  public String getTitle() {
-    return this.title;
-  }
+    public String getType() {
+        return this.type;
+    }
 
-  public String getMediaType() {
-    return this.mediaType;
-  }
+    public String getId() {
+        return this.id;
+    }
 
-  public Image getIcon() {
-    return this.icon;
-  }
+    public String getUrl() {
+        return this.url;
+    }
 
-  public Image getThumbnail() {
-    return this.thumbnail;
-  }
+    public String getText() {
+        return this.getText(false);
+    }
 
-  public ContentItemPlacement getPlacementAdvice() {
-    return this.placementAdvice;
-  }
+    public String getText(boolean allowEmpty) {
+        String t = this.text;
+        if (!allowEmpty) {
+            if (t.length() <= 0) {
+                t = this.title;
+            }
+            if (t.length() <= 0) {
+                t = this.id;
+            }
+            if (t.length() <= 0) {
+                B2Context b2Context = new B2Context();
+                t = b2Context.getResourceString("title.default");
+            }
+        }
+        return t;
+    }
 
-  public LineItem getLineItem() {
-    return this.lineItem;
-  }
+    public String getTitle() {
+        return this.title;
+    }
 
-  public Map<String,String> getCustom() {
+    public String getMediaType() {
+        return this.mediaType;
+    }
 
-    return Collections.unmodifiableMap(this.custom);
+    public Image getIcon() {
+        return this.icon;
+    }
 
-  }
+    public Image getThumbnail() {
+        return this.thumbnail;
+    }
 
-  @Override
-  public String toString() {
+    public ContentItemPlacement getPlacementAdvice() {
+        return this.placementAdvice;
+    }
 
-    return "@type: " + this.type + "\n" +
-           "@id: " + this.id + "\n" +
-           "url: " + this.url + "\n" +
-           "text: " + this.text + "\n" +
-           "title: " + this.title + "\n" +
-           "mediaType: " + this.mediaType + "\n" +
-           "icon: " + this.icon + "\n" +
-           "thumbnail: " + this.thumbnail + "\n" +
-           "placementAdvice: " + this.placementAdvice + "\n" +
-           "lineItem: " + this.lineItem + "\n" +
-           "custom: " + this.custom + "\n";
+    public LineItem getLineItem() {
+        return this.lineItem;
+    }
 
-  }
+    public Map<String, String> getCustom() {
+
+        if (this.custom == null) {
+            this.custom = new HashMap<String, String>();
+        }
+        return Collections.unmodifiableMap(this.custom);
+
+    }
+
+    @Override
+    public String toString() {
+
+        return "@type: " + this.type + "\n"
+                + "@id: " + this.id + "\n"
+                + "url: " + this.url + "\n"
+                + "text: " + this.text + "\n"
+                + "title: " + this.title + "\n"
+                + "mediaType: " + this.mediaType + "\n"
+                + "icon: " + this.icon + "\n"
+                + "thumbnail: " + this.thumbnail + "\n"
+                + "placementAdvice: " + this.placementAdvice + "\n"
+                + "lineItem: " + this.lineItem + "\n"
+                + "custom: " + this.custom + "\n";
+
+    }
 
 }

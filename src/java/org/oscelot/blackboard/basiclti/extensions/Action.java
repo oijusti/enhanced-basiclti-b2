@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2014  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.basiclti.extensions;
 
 import java.util.List;
@@ -27,7 +27,7 @@ import org.oscelot.blackboard.lti.Tool;
 
 public interface Action {
 
-  public abstract boolean execute(String actionName, B2Context b2Context, Tool tool,
-     List<String> serviceData, Response response);
+    boolean execute(String actionName, B2Context b2Context, Tool tool,
+                    List<String> serviceData, Response response);
 
 }

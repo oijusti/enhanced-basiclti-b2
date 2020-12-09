@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,41 +17,43 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti.resources.settings;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.Collections;
 import java.util.Map;
 
-
 public class ToolSettingsV1 {
-  @SerializedName("@type") private String type;
-  @SerializedName("@id") private String id;
-  private Map<String, String> custom;
 
-  public String getType() {
-    return this.type;
-  }
+    @SerializedName("@type")
+    private String type;
+    @SerializedName("@id")
+    private String id;
+    private Map<String, String> custom;
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    public String getType() {
+        return this.type;
+    }
 
-  public String getId() {
-    return this.id;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public String getId() {
+        return this.id;
+    }
 
-  public Map<String, String> getCustom() {
-    return Collections.unmodifiableMap(this.custom);
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public void setCustom(Map<String, String> custom) {
-    this.custom = Collections.unmodifiableMap(custom);
-  }
+    public Map<String, String> getCustom() {
+        return Collections.unmodifiableMap(this.custom);
+    }
+
+    public void setCustom(Map<String, String> custom) {
+        this.custom = Collections.unmodifiableMap(custom);
+    }
 
 }

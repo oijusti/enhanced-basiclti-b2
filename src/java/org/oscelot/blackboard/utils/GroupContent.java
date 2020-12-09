@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.utils;
 
 import java.util.List;
@@ -32,82 +32,77 @@ import blackboard.data.course.Group;
 import blackboard.platform.coursecontent.GroupAssignment;
 import blackboard.platform.coursecontent.impl.GroupAssignmentDAO;
 
-
 public class GroupContent {
 
 // ---------------------------------------------------
 // Function to get update the groups to which a content item has been assigned
+    public static void persistGroupAssignment(Id contentId, String assignGroups, String unassignGroups) {
 
-  public static void persistGroupAssignment(Id contentId, String assignGroups, String unassignGroups) {
-
-    List<Id> assignGroupIds = new ArrayList<Id>();
-    List<Id> unassignGroupIds = new ArrayList<Id>();
-    populateGroupList(unassignGroups, unassignGroupIds);
-    populateGroupList(assignGroups, assignGroupIds);
+        List<Id> assignGroupIds = new ArrayList<Id>();
+        List<Id> unassignGroupIds = new ArrayList<Id>();
+        populateGroupList(unassignGroups, unassignGroupIds);
+        populateGroupList(assignGroups, assignGroupIds);
 // Assign content item to groups
-    for (Iterator<Id> iter = assignGroupIds.iterator(); iter.hasNext();) {
-      Id groupId = iter.next();
-      assignToGroup(contentId, groupId);
-    }
+        for (Iterator<Id> iter = assignGroupIds.iterator(); iter.hasNext();) {
+            Id groupId = iter.next();
+            assignToGroup(contentId, groupId);
+        }
 // Unassign content item from groups
-    for (Iterator<Id> iter = unassignGroupIds.iterator(); iter.hasNext();) {
-      Id groupId = iter.next();
-      GroupAssignment groupAssignment = GroupAssignmentDAO.get().loadByGroupAndContent(contentId, groupId);
-      if (groupAssignment != null) {
-        GroupAssignmentDAO.get().deleteById(groupAssignment.getId());
-      }
-    }
+        for (Iterator<Id> iter = unassignGroupIds.iterator(); iter.hasNext();) {
+            Id groupId = iter.next();
+            GroupAssignment groupAssignment = GroupAssignmentDAO.get().loadByGroupAndContent(contentId, groupId);
+            if (groupAssignment != null) {
+                GroupAssignmentDAO.get().deleteById(groupAssignment.getId());
+            }
+        }
 
-  }
+    }
 
 // ---------------------------------------------------
 // Function to convert a comma separated list of group IDs to a list
+    private static void populateGroupList(String groups, List<Id> groupIds) {
 
-  private static void populateGroupList(String groups, List<Id> groupIds) {
-
-    if(groups.length() > 0) {
-      String groupArr[] = groups.split(",");
-      for (int i = 0; i < groupArr.length; i++) {
-        try {
-          groupIds.add(Id.generateId(Group.DATA_TYPE, groupArr[i]));
-        } catch(PersistenceException e) {
+        if (groups.length() > 0) {
+            String[] groupArr = groups.split(",");
+            for (int i = 0; i < groupArr.length; i++) {
+                try {
+                    groupIds.add(Id.generateId(Group.DATA_TYPE, groupArr[i]));
+                } catch (PersistenceException e) {
+                }
+            }
         }
-      }
+
     }
-
-  }
-
 
 // ---------------------------------------------------
 // Function to assign a content item to a group
+    private static void assignToGroup(Id contentId, Id groupId) {
 
-  private static void assignToGroup(Id contentId, Id groupId) {
+        GroupAssignment groupAssignment = GroupAssignmentDAO.get().loadByGroupAndContent(contentId, groupId);
+        Group group = null;
+        try {
+            group = GroupDbLoader.Default.getInstance().loadById(groupId);
+        } catch (PersistenceException e) {
+            group = null;
+        }
+        if (group != null) {
+            boolean persist = true;
+            if (groupAssignment == null) {
+                groupAssignment = new GroupAssignment();
+                groupAssignment.setContentId(contentId);
+                groupAssignment.setGroupId(groupId);
+                groupAssignment.setAssigned(true);
+                groupAssignment.setGroupName(group.getTitle());
+            } else if (!groupAssignment.isAssigned()) {
+                groupAssignment.setAssigned(true);
+            } else {
+                persist = false;
+            }
+            if (persist) {
+                GroupAssignmentDAO.get().persist(groupAssignment);
+            }
+        }
 
-    GroupAssignment groupAssignment = GroupAssignmentDAO.get().loadByGroupAndContent(contentId, groupId);
-    Group group = null;
-    try {
-      group = GroupDbLoader.Default.getInstance().loadById(groupId);
-    } catch (PersistenceException e) {
-      group = null;
     }
-    if (group != null) {
-      boolean persist = true;
-      if (groupAssignment == null) {
-        groupAssignment = new GroupAssignment();
-        groupAssignment.setContentId(contentId);
-        groupAssignment.setGroupId(groupId);
-        groupAssignment.setAssigned(true);
-        groupAssignment.setGroupName(group.getTitle());
-      } else if (!groupAssignment.isAssigned()) {
-        groupAssignment.setAssigned(true);
-      } else {
-        persist = false;
-      }
-      if (persist) {
-        GroupAssignmentDAO.get().persist(groupAssignment);
-      }
-    }
-
-  }
 
 }

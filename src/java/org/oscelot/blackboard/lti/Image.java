@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,38 +17,37 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti;
 
 import com.google.gson.annotations.SerializedName;
 
-
 public class Image {
 
-  @SerializedName("@id")
-  private String id;
-  private Integer width;
-  private Integer height;
+    @SerializedName("@id")
+    private String id;
+    private Integer width;
+    private Integer height;
 
-  public String getId() {
-    return this.id;
-  }
+    public String getId() {
+        return this.id;
+    }
 
-  public Integer getWidth() {
-    return this.width;
-  }
+    public Integer getWidth() {
+        return this.width;
+    }
 
-  public Integer getHeight() {
-    return this.height;
-  }
+    public Integer getHeight() {
+        return this.height;
+    }
 
-  @Override
-  public String toString() {
+    @Override
+    public String toString() {
 
-    return "@id: " + this.id + "\n" +
-           "width: " + String.valueOf(this.width) + "\n" +
-           "height: " + String.valueOf(this.height) + "\n";
+        return "@id: " + this.id + "\n"
+                + "width: " + this.width + "\n"
+                + "height: " + this.height + "\n";
 
-  }
+    }
 
 }

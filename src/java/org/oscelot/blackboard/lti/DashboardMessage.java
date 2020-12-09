@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,24 +17,23 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti;
 
 import blackboard.portal.data.Module;
 
 import com.spvsoftwareproducts.blackboard.utils.B2Context;
 
-
 public class DashboardMessage extends LaunchMessage {
 
-  public DashboardMessage(B2Context b2Context, Tool tool, Module module) {
+    public DashboardMessage(B2Context b2Context, Tool tool, Module module) {
 
-    super(b2Context, tool, module);
+        super(b2Context, tool, module);
 
-    if (this.tool.getDashboard().equals(Constants.DATA_TRUE)) {  // Still support basic-lti-launch-request message type
-      this.props.setProperty("lti_message_type", Constants.DASHBOARD_MESSAGE_TYPE);
+        if (this.tool.getDashboard().equals(Constants.DATA_TRUE)) {  // Still support basic-lti-launch-request message type
+            this.props.setProperty("lti_message_type", Constants.DASHBOARD_MESSAGE_TYPE);
+        }
+
     }
-
-  }
 
 }

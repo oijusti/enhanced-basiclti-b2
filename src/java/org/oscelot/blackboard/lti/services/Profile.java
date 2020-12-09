@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti.services;
 
 import java.util.List;
@@ -27,53 +27,52 @@ import org.oscelot.blackboard.lti.resources.Resource;
 
 import com.spvsoftwareproducts.blackboard.utils.B2Context;
 
-
 public class Profile extends Service {
 
-  private static final String ID = "profile";
-  private static final String NAME = "Tool Consumer Profile";
+    private static final String ID = "profile";
+    private static final String NAME = "Tool Consumer Profile";
 
+    public Profile(B2Context b2Context) {
 
-  public Profile(B2Context b2Context) {
+        super(b2Context);
+        this.isSigned = false;
 
-    super(b2Context);
-
-  }
-
-  public String getId() {
-
-    return ID;
-
-  }
-
-  @Override
-  public String getName() {
-
-    return NAME;
-
-  }
-
-  public List<Resource> getResources() {
-
-    if (this.resources == null) {
-      this.resources = new ArrayList<Resource>();
-      resources.add(new org.oscelot.blackboard.lti.resources.Profile(this));
     }
 
-    return this.resources;
+    public String getId() {
 
-  }
+        return ID;
 
-  @Override
-  public String parseValue(String value) {
-
-    if (this.getTool().getIsSystemTool()) {
-      this.getResources();
-      value = this.resources.get(0).parseValue(value);
     }
 
-    return value;
+    @Override
+    public String getName() {
 
-  }
+        return NAME;
+
+    }
+
+    public List<Resource> getResources() {
+
+        if (this.resources == null) {
+            this.resources = new ArrayList<Resource>();
+            resources.add(new org.oscelot.blackboard.lti.resources.Profile(this));
+        }
+
+        return this.resources;
+
+    }
+
+    @Override
+    public String parseValue(String value) {
+
+        if (this.getTool().getIsSystemTool()) {
+            this.getResources();
+            value = this.resources.get(0).parseValue(value);
+        }
+
+        return value;
+
+    }
 
 }

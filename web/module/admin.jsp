@@ -1,6 +1,6 @@
 <%--
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,15 +19,15 @@
     Contact: stephen@spvsoftwareproducts.com
 --%>
 <%@page import="java.util.List,
-                java.util.Map,
-                java.util.Iterator,
-                java.util.HashMap,
-                blackboard.data.role.PortalRole,
-                org.oscelot.blackboard.lti.ToolList,
-                org.oscelot.blackboard.lti.Tool,
-                com.spvsoftwareproducts.blackboard.utils.B2Context,
-                org.oscelot.blackboard.lti.Constants,
-                org.oscelot.blackboard.lti.Utils"
+        java.util.Map,
+        java.util.Iterator,
+        java.util.HashMap,
+        blackboard.data.role.PortalRole,
+        org.oscelot.blackboard.lti.ToolList,
+        org.oscelot.blackboard.lti.Tool,
+        com.spvsoftwareproducts.blackboard.utils.B2Context,
+        org.oscelot.blackboard.lti.Constants,
+        org.oscelot.blackboard.lti.Utils"
         errorPage="../error.jsp"%>
 <%@taglib uri="/bbNG" prefix="bbNG" %>
 <%
@@ -35,6 +35,7 @@
   Utils.checkForm(request, formName);
 
   B2Context b2Context = new B2Context(request);
+  Utils.checkInheritSettings(b2Context);
 
   ToolList toolList = new ToolList(b2Context);
   String toolId = b2Context.getRequestParameter(Constants.TOOL_ID,
@@ -118,7 +119,7 @@
   pageContext.setAttribute("iconUrl", iconUrl);
   pageContext.setAttribute("params", params);
 %>
-<bbNG:modulePage type="admin" title="${bundle['page.module.admin.title']}" iconUrl="${iconUrl}" entitlement="system.admin.VIEW">
+<bbNG:modulePage type="admin" title="${bundle['page.module.admin.title']}" iconUrl="${iconUrl}" entitlement="system.generic.VIEW">
   <bbNG:pageHeader instructions="${bundle['page.module.admin.instructions']}">
     <bbNG:breadcrumbBar>
       <bbNG:breadcrumb title="${bundle['page.module.admin.title']}" />
@@ -130,17 +131,17 @@
       <bbNG:step hideNumber="false" id="stepOne" title="${bundle['page.module.admin.step1.title']}" instructions="${bundle['page.module.admin.step1.instructions']}">
         <bbNG:dataElement isRequired="true" label="${bundle['page.content.create.step1.tools.label']}">
           <bbNG:selectElement name="<%=Constants.TOOL_ID%>" helpText="${bundle['page.content.create.step1.tools.instructions']}">
-<%
-  for (Iterator<Tool> iter=toolList.getList().iterator(); iter.hasNext();) {
-    Tool atool = iter.next();
-    String atoolId = atool.getId();
-    String atoolName = atool.getName();
-    boolean selected = toolId.equals(atoolId);
-%>
+            <%
+              for (Iterator<Tool> iter=toolList.getList().iterator(); iter.hasNext();) {
+                Tool atool = iter.next();
+                String atoolId = atool.getId();
+                String atoolName = atool.getName();
+                boolean selected = toolId.equals(atoolId);
+            %>
             <bbNG:selectOptionElement isSelected="<%=selected%>" value="<%=atoolId%>" optionLabel="<%=atoolName%>" />
-<%
-  }
-%>
+            <%
+              }
+            %>
           </bbNG:selectElement>
         </bbNG:dataElement>
         <bbNG:dataElement isRequired="false" label="${bundle['page.module.admin.step1.url.label']}">
@@ -170,21 +171,21 @@
       <bbNG:step hideNumber="false" title="${bundle['page.system.data.step3.title']}" instructions="${bundle['page.system.data.step3.instructions']}">
         <bbNG:dataElement isRequired="true" label="${bundle['page.system.data.step3.roles.label']}">
           <bbNG:settingsPageList collection="<%=iRoles%>" objectVar="iRole" className="PortalRole"
-             description="${bundle['page.system.data.step3.roles.description']}" reorderable="false">
+                                 description="${bundle['page.system.data.step3.roles.description']}" reorderable="false">
             <bbNG:listElement isRowHeader="true" label="${bundle['page.system.data.step3.roles.label']}" name="name">
-<%
-      String iRoleSetting = params.get("irole" + iRole.getRoleID());
-      if (iRoleSetting != null) {
-        pageContext.setAttribute("iroleF", String.valueOf(iRoleSetting.contains("F")));
-        pageContext.setAttribute("iroleS", String.valueOf(iRoleSetting.contains("S")));
-        pageContext.setAttribute("iroleL", String.valueOf(iRoleSetting.contains("L")));
-        pageContext.setAttribute("iroleP", String.valueOf(iRoleSetting.contains("P")));
-        pageContext.setAttribute("iroleA", String.valueOf(iRoleSetting.contains("A")));
-        pageContext.setAttribute("iroleO", String.valueOf(iRoleSetting.contains("O")));
-        pageContext.setAttribute("iroleG", String.valueOf(iRoleSetting.contains("G")));
-        pageContext.setAttribute("iroleZ", String.valueOf(iRoleSetting.contains("Z")));
-      }
-%>
+              <%
+                    String iRoleSetting = params.get("irole" + iRole.getRoleID());
+                    if (iRoleSetting != null) {
+                      pageContext.setAttribute("iroleF", String.valueOf(iRoleSetting.contains("F")));
+                      pageContext.setAttribute("iroleS", String.valueOf(iRoleSetting.contains("S")));
+                      pageContext.setAttribute("iroleL", String.valueOf(iRoleSetting.contains("L")));
+                      pageContext.setAttribute("iroleP", String.valueOf(iRoleSetting.contains("P")));
+                      pageContext.setAttribute("iroleA", String.valueOf(iRoleSetting.contains("A")));
+                      pageContext.setAttribute("iroleO", String.valueOf(iRoleSetting.contains("O")));
+                      pageContext.setAttribute("iroleG", String.valueOf(iRoleSetting.contains("G")));
+                      pageContext.setAttribute("iroleZ", String.valueOf(iRoleSetting.contains("Z")));
+                    }
+              %>
               ${iRole.roleName}
             </bbNG:listElement>
             <bbNG:listElement isRowHeader="false" name="F" label="${bundle['page.system.data.step4.iroles.faculty']}">

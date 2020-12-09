@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti.resources;
 
 import java.util.List;
@@ -26,13 +26,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
-
-import blackboard.data.content.Content;
-import blackboard.data.course.Course;
-import blackboard.persist.Id;
-import blackboard.persist.PersistenceException;
-import blackboard.platform.context.Context;
-import blackboard.platform.context.ContextManagerFactory;
+import java.util.Properties;
 
 import org.oscelot.blackboard.lti.Tool;
 import org.oscelot.blackboard.lti.Constants;
@@ -40,162 +34,135 @@ import org.oscelot.blackboard.lti.services.Service;
 
 import com.spvsoftwareproducts.blackboard.utils.B2Context;
 
-
 public abstract class Resource {
 
 // Default settings
-  private static final String TYPE = "RestService";
+    private static final String TYPE = "RestService";
 
-  private Service service = null;
-  protected List<String> variables = null;
-  protected List<String> methods = null;
-  protected Map<String,String> params = null;
-  protected List<SettingDef> settings = null;
+    private Service service = null;
+    protected List<String> variables = null;
+    protected List<String> methods = null;
+    protected Map<String, String> params = null;
+    protected List<SettingDef> settings = null;
 
+    public Resource(Service service) {
 
-  public Resource(Service service) {
+        this.service = service;
+        this.methods = new ArrayList<String>();
+        this.variables = new ArrayList<String>();
+        this.methods.add("GET");
+        this.settings = new ArrayList<SettingDef>();
 
-    this.service = service;
-    this.methods = new ArrayList<String>();
-    this.variables = new ArrayList<String>();
-    this.methods.add("GET");
-    this.settings = new ArrayList<SettingDef>();
-
-  }
-
-  public String getPath() {
-
-    return this.getTemplate();
-
-  }
-
-  public String getType() {
-
-    return TYPE;
-
-  }
-
-  public Service getService() {
-
-    return this.service;
-
-  }
-
-  public abstract String getId();
-
-  public String getName() {
-
-    return "Unnamed resource";
-
-  }
-
-  public abstract String getTemplate();
-
-  public List<String> getMethods() {
-
-    return Collections.unmodifiableList(this.methods);
-
-  }
-
-  public abstract List<String> getFormats();
-
-  public List<String> getVariables() {
-
-    return this.variables;
-
-  }
-
-  public List<SettingDef> getSettings() {
-
-    return Collections.unmodifiableList(this.settings);
-
-  }
-
-  public String getEndpoint() {
-
-    this.parseTemplate();
-    B2Context b2Context = this.getService().getB2Context();
-    String url = b2Context.getServerUrl() + b2Context.getPath() + Constants.RESOURCE_PATH + this.getTemplate();
-    String key;
-    for (Iterator<String> iter = this.params.keySet().iterator(); iter.hasNext();) {
-      key = iter.next();
-      url = url.replaceAll("\\{" + key + "\\}", this.params.get(key));
-    }
-    Tool tool = this.getService().getTool();
-    if (tool != null) {
-      url = url.replaceAll("\\{tool_id\\}", tool.getId());
     }
 
-    return url;
+    public String getPath() {
 
-  }
+        return this.getTemplate().replaceAll("[\\(\\)]", "");
 
-  public abstract void execute(B2Context b2Context, Response response);
+    }
 
-  public String parseValue(String value) {
+    public String getType() {
 
-    return value;
+        return TYPE;
 
-  }
+    }
 
-  protected Map<String,String> parseTemplate() {
+    public Service getService() {
 
-    if (this.params == null) {
-      this.params = new HashMap<String,String>();
-      String pathInfo = this.getService().getB2Context().getRequest().getPathInfo();
-      if (pathInfo != null) {
-        String[] path = pathInfo.split("/");
-        String[] parts = this.getTemplate().split("/");
-        String value;
-        for (int i = 0; i < parts.length; i++) {
-          if (parts[i].startsWith("{") && parts[i].endsWith("}")) {
-            value = "";
-            if (i < path.length) {
-              value = path[i];
-            }
-            params.put(parts[i].substring(1, parts[i].length() - 1), value);
-          }
+        return this.service;
+
+    }
+
+    public abstract String getId();
+
+    public String getName() {
+
+        return "Unnamed resource";
+
+    }
+
+    public abstract String getTemplate();
+
+    public List<String> getMethods() {
+
+        return Collections.unmodifiableList(this.methods);
+
+    }
+
+    public abstract List<String> getFormats();
+
+    public List<String> getVariables() {
+
+        return this.variables;
+
+    }
+
+    public Map<String, String> getCustomParameters(B2Context b2Context, Properties props) {
+
+        return new HashMap<String, String>();
+
+    }
+
+    public List<SettingDef> getSettings() {
+
+        return Collections.unmodifiableList(this.settings);
+
+    }
+
+    public String getEndpoint() {
+
+        this.parseTemplate();
+        B2Context b2Context = this.getService().getB2Context();
+        String template = this.getTemplate();
+        template = template.replaceAll("[\\(\\)]", "");
+        String url = b2Context.getServerUrl() + b2Context.getPath() + Constants.RESOURCE_PATH + template;
+        Map.Entry<String, String> entry;
+        for (Iterator<Map.Entry<String, String>> iter = this.params.entrySet().iterator(); iter.hasNext();) {
+            entry = iter.next();
+            url = url.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue());
         }
-      }
+        Tool tool = this.getService().getTool();
+        if (tool != null) {
+            url = url.replaceAll("\\{tool_id\\}", tool.getId());
+        }
+
+        return url;
+
     }
 
-    return Collections.unmodifiableMap(this.params);
+    public abstract void execute(B2Context b2Context, Response response);
 
-  }
+    public String parseValue(String value) {
 
-  protected static Context initContext(String course, String content) {
+        return value;
 
-    Id courseId = Id.UNSET_ID;
-    Id contentId = Id.UNSET_ID;
-    if (course != null) {
-      try {
-        courseId = Id.generateId(Course.DATA_TYPE, course);
-      } catch (PersistenceException e) {
-      }
-    }
-    if (content != null) {
-      try {
-        contentId = Id.generateId(Content.DATA_TYPE, content);
-      } catch (PersistenceException e) {
-      }
     }
 
-    return initContext(courseId, contentId);
+    protected Map<String, String> parseTemplate() {
 
-  }
+        if (this.params == null) {
+            this.params = new HashMap<String, String>();
+            String pathInfo = this.getService().getB2Context().getRequest().getPathInfo();
+            if (pathInfo != null) {
+                String[] path = pathInfo.split("/");
+                String template = this.getTemplate();
+                template = template.replaceAll("[\\(\\)]", "");
+                String[] parts = template.split("/");
+                String value;
+                for (int i = 0; i < parts.length; i++) {
+                    if (parts[i].startsWith("{") && parts[i].endsWith("}")) {
+                        value = "";
+                        if (i < path.length) {
+                            value = path[i];
+                        }
+                        params.put(parts[i].substring(1, parts[i].length() - 1), value);
+                    }
+                }
+            }
+        }
 
-  protected static Context initContext(Id courseId, Id contentId) {
+        return Collections.unmodifiableMap(this.params);
 
-    Context ctx = ContextManagerFactory.getInstance().getContext();
-    Id vhId = Id.UNSET_ID;
-    try {
-      vhId = ctx.getVirtualHost().getId();
-    } catch (PersistenceException e) {
     }
-
-    return ContextManagerFactory.getInstance().setContext(vhId, courseId, Id.UNSET_ID,
-       Id.UNSET_ID, contentId);
-
-  }
 
 }

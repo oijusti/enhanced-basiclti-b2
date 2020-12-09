@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,17 +17,16 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.utils;
-
 
 public class InstitutionRenderingHook extends BasicLTIRenderingHook {
 
-  public InstitutionRenderingHook() {
+    public InstitutionRenderingHook() {
 
-    super();
-    this.key = "jsp.frameset.start";
+        super();
+        this.key = "jsp.frameset.start";
 
-  }
+    }
 
 }

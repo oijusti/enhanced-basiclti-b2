@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti.services;
 
 import java.util.List;
@@ -29,121 +29,120 @@ import com.spvsoftwareproducts.blackboard.utils.B2Context;
 import java.util.Iterator;
 import java.util.Properties;
 
-
 public class Setting extends Service {
 
-  private static final String ID = "setting";
-  private static final String NAME = "Tool Settings";
+    private static final String ID = "setting";
+    private static final String NAME = "Tool Settings";
 
+    public Setting(B2Context b2Context) {
 
-  public Setting(B2Context b2Context) {
+        super(b2Context);
 
-    super(b2Context);
-
-  }
-
-  public String getId() {
-
-    return ID;
-
-  }
-
-  @Override
-  public String getName() {
-
-    return NAME;
-
-  }
-
-  public List<Resource> getResources() {
-
-    if (this.resources == null) {
-      this.resources = new ArrayList<Resource>();
-      resources.add(new org.oscelot.blackboard.lti.resources.LinkSetting(this));
-      resources.add(new org.oscelot.blackboard.lti.resources.ContextSetting(this));
-      resources.add(new org.oscelot.blackboard.lti.resources.SystemSetting(this));
     }
 
-    return this.resources;
+    public String getId() {
 
-  }
+        return ID;
 
-  public static Properties stringToProperties(String settings) {
-
-    Properties props = new Properties();
-    String[] items = settings.split("\\n");
-    for (int i=0; i < items.length; i++) {
-      String[] item = items[i].split("=", 2);
-      if (item.length > 0) {
-        if (item[0].length()>0) {
-          if (item.length > 1) {
-            props.setProperty(item[0], item[1]);
-          } else {
-            props.setProperty(item[0], "");
-          }
-        }
-      }
     }
 
-    return props;
+    @Override
+    public String getName() {
 
-  }
+        return NAME;
 
-  public static void distinctSettings(Properties systemSettings, Properties contextSettings, Properties linkSettings) {
-
-    String key;
-    if (systemSettings != null) {
-      for (Iterator<Object> iter = systemSettings.keySet().iterator(); iter.hasNext();) {
-        key = (String)iter.next();
-        if (((contextSettings != null) && contextSettings.containsKey(key)) || ((linkSettings != null) && linkSettings.containsKey(key))) {
-          iter.remove();
-        }
-      }
-    }
-    if (contextSettings != null) {
-      for (Iterator<Object> iter = contextSettings.keySet().iterator(); iter.hasNext();) {
-        key = (String)iter.next();
-        if ((linkSettings != null) && linkSettings.containsKey(key)) {
-          iter.remove();
-        }
-      }
     }
 
-  }
+    @Override
+    public List<Resource> getResources() {
 
-  public static String settingsToJson(Properties settings, boolean simpleFormat, String type, Resource resource) {
+        if (this.resources == null) {
+            this.resources = new ArrayList<Resource>();
+            resources.add(new org.oscelot.blackboard.lti.resources.LinkSetting(this));
+            resources.add(new org.oscelot.blackboard.lti.resources.ContextSetting(this));
+            resources.add(new org.oscelot.blackboard.lti.resources.SystemSetting(this));
+        }
 
-    StringBuilder json = new StringBuilder();
-    if (settings != null) {
-      String indent = "";
-      if (!simpleFormat) {
-        String endpoint = resource.getEndpoint();
-        json.append("    {\n").append("      \"@type\":\"").append(type).append("\",\n");
-        json.append("      \"@id\":\"").append(endpoint).append("\",\n");
-        json.append("      \"custom\":{\n");
-        indent = "      ";
-      }
-      String setting;
-      boolean isFirst = true;
-      for (Iterator<Object> iter = settings.keySet().iterator(); iter.hasNext();) {
-        setting = (String)iter.next();
-        if (!isFirst) {
-          json.append(",\n");
-        } else {
-          isFirst = false;
-        }
-        json.append(indent).append("  \"").append(setting).append("\":\"").append(settings.getProperty(setting)).append("\"");
-      }
-      if (!simpleFormat) {
-        if (!isFirst) {
-          json.append("\n");
-        }
-        json.append(indent).append("}").append("\n    }");
-      }
+        return this.resources;
+
     }
 
-    return json.toString();
+    public static Properties stringToProperties(String settings) {
 
-  }
+        Properties props = new Properties();
+        String[] items = settings.split("\\n");
+        for (int i = 0; i < items.length; i++) {
+            String[] item = items[i].split("=", 2);
+            if (item.length > 0) {
+                if (item[0].length() > 0) {
+                    if (item.length > 1) {
+                        props.setProperty(item[0], item[1]);
+                    } else {
+                        props.setProperty(item[0], "");
+                    }
+                }
+            }
+        }
+
+        return props;
+
+    }
+
+    public static void distinctSettings(Properties systemSettings, Properties contextSettings, Properties linkSettings) {
+
+        String key;
+        if (systemSettings != null) {
+            for (Iterator<Object> iter = systemSettings.keySet().iterator(); iter.hasNext();) {
+                key = (String) iter.next();
+                if (((contextSettings != null) && contextSettings.containsKey(key)) || ((linkSettings != null) && linkSettings.containsKey(key))) {
+                    iter.remove();
+                }
+            }
+        }
+        if (contextSettings != null) {
+            for (Iterator<Object> iter = contextSettings.keySet().iterator(); iter.hasNext();) {
+                key = (String) iter.next();
+                if ((linkSettings != null) && linkSettings.containsKey(key)) {
+                    iter.remove();
+                }
+            }
+        }
+
+    }
+
+    public static String settingsToJson(Properties settings, boolean simpleFormat, String type, Resource resource) {
+
+        StringBuilder json = new StringBuilder();
+        if (settings != null) {
+            String indent = "";
+            if (!simpleFormat) {
+                String endpoint = resource.getEndpoint();
+                json.append("    {\n").append("      \"@type\":\"").append(type).append("\",\n");
+                json.append("      \"@id\":\"").append(endpoint).append("\",\n");
+                json.append("      \"custom\":{\n");
+                indent = "      ";
+            }
+            String setting;
+            boolean isFirst = true;
+            for (Iterator<Object> iter = settings.keySet().iterator(); iter.hasNext();) {
+                setting = (String) iter.next();
+                if (!isFirst) {
+                    json.append(",\n");
+                } else {
+                    isFirst = false;
+                }
+                json.append(indent).append("  \"").append(setting).append("\":\"").append(settings.getProperty(setting)).append("\"");
+            }
+            if (!simpleFormat) {
+                if (!isFirst) {
+                    json.append("\n");
+                }
+                json.append(indent).append("}").append("\n    }");
+            }
+        }
+
+        return json.toString();
+
+    }
 
 }

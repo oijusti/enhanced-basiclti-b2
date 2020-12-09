@@ -1,6 +1,6 @@
 <%--
-    basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    basiclti - Building Block to provide support for LTI
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,40 +26,17 @@
 <%
   B2Context b2Context = new B2Context(request);
 
-  BbResourceBundle bundle = BundleManagerFactory.getInstance().getBundle("portal_view");
-  String loadMsg = bundle.getString("portalUtil.pleaseWaitMsg");
-
   pageContext.setAttribute("vendor", b2Context.getVendorId());
   pageContext.setAttribute("handle", b2Context.getHandle());
   pageContext.setAttribute("path", b2Context.getPath());
-  pageContext.setAttribute("loadMsg", loadMsg);
+  pageContext.setAttribute("path2", b2Context.getPath("bb_bb60"));
 %>
-var osc_BasicLTI_timer;
-var osc_BasicLTI_divs = new Array();
 Event.observe(document,"dom:loaded", function() {
-  $$('div.collapsible div').each(function(item) {
-    if (item.innerHTML === '${loadMsg}') {
-      osc_BasicLTI_divs.push(item);
-    }
-  });
-  $$('a[href*="${path}tool.jsp"]').invoke('observe', 'click', ${vendor}_${handle}_openBasicLTI);
-  if (osc_BasicLTI_divs.length > 0) {
-    osc_BasicLTI_timer = window.setInterval(${vendor}_${handle}_onClickBasicLTI, 500);
-  }
+  $(document).on('click', 'a[href*="${path}tool.jsp"]', ${vendor}_${handle}_openBasicLTI);
+  $(document).on('click', 'a[href*="${path2}tool.jsp"]', ${vendor}_${handle}_openBasicLTI);
+  $(document).on('click', 'a[href*="${path2}popup"]', ${vendor}_${handle}_openBasicLTI);
+  $(document).on('click', 'a[href*="${path2}overlay"]', ${vendor}_${handle}_openBasicLTI);
+  $(document).on('click', 'a[href*="${path}config.jsp"]', ${vendor}_${handle}_openBasicLTI);
+  $(document).on('click', 'a[href*="${path}config2.jsp"]', ${vendor}_${handle}_openBasicLTI);
+  $$('img[src*="${path}icon.jsp"]').invoke('writeAttribute', 'style', 'max-width: 50px');
 });
-
-function ${vendor}_${handle}_onClickBasicLTI(event) {
-  var divs = new Array();
-  osc_BasicLTI_divs.each(function(item) {
-    if (item.innerHTML === '${loadMsg}') {
-      divs.push(item);
-    } else {
-      $$('div#' + item.id + ' a[href*="${path}tool.jsp"]').invoke('observe', 'click', ${vendor}_${handle}_openBasicLTI);
-    }
-  });
-  if (divs.length > 0) {
-    osc_BasicLTI_divs = divs;
-  } else {
-    window.clearTimeout(osc_BasicLTI_timer);
-  }
-}

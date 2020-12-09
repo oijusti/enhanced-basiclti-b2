@@ -1,6 +1,6 @@
 <%--
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,46 +20,46 @@
 --%>
 <%@page contentType="application/json" pageEncoding="UTF-8"
         import="java.io.BufferedReader,
-                com.google.gson.JsonObject,
-                com.google.gson.JsonParser,
-                com.spvsoftwareproducts.blackboard.utils.B2Context,
-                org.oscelot.blackboard.lti.Tool,
-                org.oscelot.blackboard.lti.Constants,
-                org.oscelot.blackboard.lti.Utils"
+        com.google.gson.JsonObject,
+        com.google.gson.JsonParser,
+        com.spvsoftwareproducts.blackboard.utils.B2Context,
+        org.oscelot.blackboard.lti.Tool,
+        org.oscelot.blackboard.lti.Constants,
+        org.oscelot.blackboard.lti.Utils"
         errorPage="../error.jsp"%>
 <%
-  B2Context b2Context = new B2Context(request);
+    B2Context b2Context = new B2Context(request);
 
-  JsonObject result = new JsonObject();
+    JsonObject result = new JsonObject();
 
-  BufferedReader reader = request.getReader();
-  StringBuilder data = new StringBuilder();
-  String line;
-  while ((line = reader.readLine()) != null) {
-    data.append(line);
-  }
-  JsonObject json = new JsonParser().parse(data.toString()).getAsJsonObject();
-
-  String url = json.get("url").getAsString();
-
-  boolean createColumn = false;
-  Tool domain = Utils.urlToDomain(b2Context, url);
-  if (domain != null) {
-    createColumn = domain.getOutcomesService().equals(Constants.DATA_MANDATORY) &&
-       domain.getOutcomesColumn().equals(Constants.DATA_TRUE);
-    if (createColumn) {
-      result.addProperty("domain", domain.getName());
-      if (domain.getOutcomesFormat().equals(Constants.EXT_OUTCOMES_COLUMN_SCORE)) {
-        result.addProperty("format", 1);
-      } else {
-        result.addProperty("format", 0);
-      }
-      result.addProperty("points", domain.getOutcomesPointsPossible());
-      result.addProperty("scorable", domain.getOutcomesScorable().equals(Constants.DATA_TRUE));
-      result.addProperty("visible", domain.getOutcomesVisible().equals(Constants.DATA_TRUE));
+    BufferedReader reader = request.getReader();
+    StringBuilder data = new StringBuilder();
+    String line;
+    while ((line = reader.readLine()) != null) {
+        data.append(line);
     }
-  }
+    JsonObject json = new JsonParser().parse(data.toString()).getAsJsonObject();
 
-  result.addProperty("createColumn", createColumn);
-  response.getWriter().print(result.toString());
+    String url = json.get("url").getAsString();
+
+    boolean createColumn = false;
+    Tool domain = Utils.urlToDomain(b2Context, url);
+    if (domain != null) {
+        createColumn = domain.getOutcomesService().equals(Constants.DATA_MANDATORY)
+                && domain.getOutcomesColumn().equals(Constants.DATA_TRUE);
+        if (createColumn) {
+            result.addProperty("domain", domain.getName());
+            if (domain.getOutcomesFormat().equals(Constants.EXT_OUTCOMES_COLUMN_SCORE)) {
+                result.addProperty("format", 1);
+            } else {
+                result.addProperty("format", 0);
+            }
+            result.addProperty("points", domain.getOutcomesPointsPossible());
+            result.addProperty("scorable", domain.getOutcomesScorable().equals(Constants.DATA_TRUE));
+            result.addProperty("visible", domain.getOutcomesVisible().equals(Constants.DATA_TRUE));
+        }
+    }
+
+    result.addProperty("createColumn", createColumn);
+    response.getWriter().print(result.toString());
 %>

@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,47 +17,46 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti;
 
 import com.google.gson.annotations.SerializedName;
 
-
 public class ScoreConstraints {
 
-  @SerializedName("@type")
-  private String type;
-  private Integer normalMaximum = null;
-  private Integer extraCreditMaximum = null;
-  private Integer totalMaximum = null;
+    @SerializedName("@type")
+    private String type;
+    private Integer normalMaximum = null;
+    private Integer extraCreditMaximum = null;
+    private Integer totalMaximum = null;
 
-  public ScoreConstraints() {
-  }
+    public ScoreConstraints() {
+    }
 
-  public String getType() {
-    return this.type;
-  }
+    public String getType() {
+        return this.type;
+    }
 
-  public Integer getNormalMaximum() {
-    return this.normalMaximum;
-  }
+    public Integer getNormalMaximum() {
+        return this.normalMaximum;
+    }
 
-  public Integer getExtraCreditMaximum() {
-    return this.extraCreditMaximum;
-  }
+    public Integer getExtraCreditMaximum() {
+        return this.extraCreditMaximum;
+    }
 
-  public Integer getTotalMaximum() {
-    return this.totalMaximum;
-  }
+    public Integer getTotalMaximum() {
+        return this.totalMaximum;
+    }
 
-  @Override
-  public String toString() {
+    @Override
+    public String toString() {
 
-    return "@type: " + this.type + "\n" +
-           "normalMaximum: " + String.valueOf(this.normalMaximum) + "\n" +
-           "extraCreditMaximum: " + String.valueOf(this.extraCreditMaximum) + "\n" +
-           "totalMaximum: " + String.valueOf(this.totalMaximum) + "\n";
+        return "@type: " + this.type + "\n"
+                + "normalMaximum: " + this.normalMaximum + "\n"
+                + "extraCreditMaximum: " + this.extraCreditMaximum + "\n"
+                + "totalMaximum: " + this.totalMaximum + "\n";
 
-  }
+    }
 
 }

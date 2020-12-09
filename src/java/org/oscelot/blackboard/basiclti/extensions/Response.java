@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,89 +17,89 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.basiclti.extensions;
 
+import org.oscelot.blackboard.lti.Utils;
 
 public class Response {
 
-  private boolean ok = false;
-  private String action = null;
-  private String codeMinor = null;
-  private String description = null;
-  private String data = null;
+    private boolean ok = false;
+    private String action = null;
+    private String codeMinor = null;
+    private String description = null;
+    private String data = null;
 
-  public Response() {
-  }
-
-  public String getAction() {
-    return action;
-  }
-
-  public void setAction(String action) {
-    this.action = action;
-  }
-
-  public String getCodeMinor() {
-    return codeMinor;
-  }
-
-  public void setCodeMinor(String codeMinor) {
-    this.codeMinor = codeMinor;
-  }
-
-  public String getData() {
-    return data;
-  }
-
-  public void setData(String data) {
-    this.data = data;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public boolean isOk() {
-    return ok;
-  }
-
-  public void setOk(boolean ok) {
-    this.ok = ok;
-  }
-
-  public String toXML() {
-
-    StringBuilder xml = new StringBuilder();
-    xml.append("<?xml version = \"1.0\" encoding = \"UTF-8\"?>\n");
-    xml.append("<message_response>\n");
-    xml.append("  <lti_message_type>").append(this.action).append("</lti_message_type>\n");
-    xml.append("  <statusinfo>\n" );
-    if (this.ok) {
-      xml.append("    <codemajor>Success</codemajor>\n");
-      xml.append("    <severity>Status</severity>\n");
-    } else {
-      xml.append("    <codemajor>Failure</codemajor>\n");
-      xml.append("    <severity>Error</severity>\n");
+    public Response() {
     }
-    if (this.codeMinor != null) {
-      xml.append("    <codeminor>").append(this.codeMinor).append("</codeminor>\n");
-    }
-    if (this.description != null) {
-      xml.append("    <description>").append(this.description).append("</description>\n");
-    }
-    xml.append("  </statusinfo>\n");
-    if (this.data != null) {
-      xml.append(data);
-    }
-    xml.append("</message_response>");
 
-    return xml.toString();
+    public String getAction() {
+        return action;
+    }
 
-  }
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getCodeMinor() {
+        return codeMinor;
+    }
+
+    public void setCodeMinor(String codeMinor) {
+        this.codeMinor = codeMinor;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isOk() {
+        return ok;
+    }
+
+    public void setOk(boolean ok) {
+        this.ok = ok;
+    }
+
+    public String toXML() {
+
+        StringBuilder xml = new StringBuilder();
+        xml.append("<message_response>\n");
+        xml.append("  <lti_message_type>").append(this.action).append("</lti_message_type>\n");
+        xml.append("  <statusinfo>\n");
+        if (this.ok) {
+            xml.append("    <codemajor>Success</codemajor>\n");
+            xml.append("    <severity>Status</severity>\n");
+        } else {
+            xml.append("    <codemajor>Failure</codemajor>\n");
+            xml.append("    <severity>Error</severity>\n");
+        }
+        if (this.codeMinor != null) {
+            xml.append("    <codeminor>").append(Utils.htmlSpecialChars(this.codeMinor)).append("</codeminor>\n");
+        }
+        if (this.description != null) {
+            xml.append("    <description>").append(Utils.htmlSpecialChars(this.description)).append("</description>\n");
+        }
+        xml.append("  </statusinfo>\n");
+        if (this.data != null) {
+            xml.append(data);
+        }
+        xml.append("</message_response>");
+
+        return xml.toString();
+
+    }
 
 }

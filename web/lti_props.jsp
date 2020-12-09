@@ -1,6 +1,6 @@
 <%--
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,34 +19,29 @@
     Contact: stephen@spvsoftwareproducts.com
 --%>
 <%@page import="java.util.Map,
-                java.util.List,
-                blackboard.portal.data.Module,
-                blackboard.portal.persist.ModuleDbLoader,
-                blackboard.persist.Id,
-                blackboard.persist.KeyNotFoundException,
-                blackboard.persist.PersistenceException,
-                com.spvsoftwareproducts.blackboard.utils.B2Context,
-                org.oscelot.blackboard.lti.Constants,
-                org.oscelot.blackboard.lti.Tool,
-                org.oscelot.blackboard.lti.Utils,
-                org.oscelot.blackboard.lti.LaunchMessage"%>
+        java.util.List,
+        blackboard.portal.data.Module,
+        blackboard.portal.persist.ModuleDbLoader,
+        blackboard.persist.Id,
+        blackboard.persist.KeyNotFoundException,
+        blackboard.persist.PersistenceException,
+        com.spvsoftwareproducts.blackboard.utils.B2Context,
+        org.oscelot.blackboard.lti.Constants,
+        org.oscelot.blackboard.lti.Tool,
+        org.oscelot.blackboard.lti.Utils,
+        org.oscelot.blackboard.lti.LaunchMessage"%>
 <%
-  String moduleId = Utils.checkForModule(request);
-  Module module = Utils.getModule(moduleId);
-  B2Context b2Context = new B2Context(request);
-  boolean nodeSupport = b2Context.getSetting(Constants.NODE_CONFIGURE, Constants.DATA_FALSE).equals(Constants.DATA_TRUE);
-  if (nodeSupport) {
-    b2Context.setInheritSettings(b2Context.getSetting(Constants.INHERIT_SETTINGS, Constants.DATA_FALSE).equals(Constants.DATA_TRUE));
-  } else {
-    b2Context.clearNode();
-  }
-  pageContext.setAttribute("bundle", b2Context.getResourceStrings());
-  String toolId = b2Context.getRequestParameter(Constants.TOOL_ID,
-     b2Context.getSetting(false, true, Constants.TOOL_PARAMETER_PREFIX + "." + Constants.TOOL_ID, ""));
-  Tool tool = Utils.getTool(b2Context, toolId);
-  String toolURL = tool.getLaunchUrl();
+    String moduleId = Utils.checkForModule(request);
+    Module module = Utils.getModule(moduleId);
+    B2Context b2Context = new B2Context(request);
+    Utils.checkInheritSettings(b2Context);
+    pageContext.setAttribute("bundle", b2Context.getResourceStrings());
+    String toolId = b2Context.getRequestParameter(Constants.TOOL_ID,
+            b2Context.getSetting(false, true, Constants.TOOL_PARAMETER_PREFIX + "." + Constants.TOOL_ID, ""));
+    Tool tool = Utils.getTool(b2Context, toolId);
+    String toolURL = tool.getLaunchUrl();
 
-  LaunchMessage message = new LaunchMessage(b2Context, tool, module);
-  message.signParameters(toolURL, tool.getLaunchGUID(), tool.getLaunchSecret(), tool.getLaunchSignatureMethod());
-  List<Map.Entry<String, String>> params = message.getParams();
+    LaunchMessage message = new LaunchMessage(b2Context, tool, module);
+    message.signParameters(toolURL, tool.getLaunchGUID(), tool.getLaunchSecret(), tool.getLaunchSignatureMethod());
+    List<Map.Entry<String, String>> params = message.getParams();
 %>

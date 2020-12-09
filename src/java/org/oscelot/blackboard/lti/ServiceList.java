@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,11 +17,10 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -31,129 +30,91 @@ import org.oscelot.blackboard.lti.services.Service;
 
 import com.spvsoftwareproducts.blackboard.utils.B2Context;
 
-
 public class ServiceList {
 
-  public static final Map<String,String> STANDARD_SERVICES = new HashMap<String,String>() {{
-    put("org.oscelot.blackboard.lti.services.Profile", Constants.DATA_TRUE);
-    put("org.oscelot.blackboard.lti.services.Setting", Constants.DATA_FALSE);
-    put("org.oscelot.blackboard.lti.services.OutcomesV1", Constants.DATA_TRUE);
-  }};
+    public static final List<String> STANDARD_SERVICES = new ArrayList<String>() {
+        {
+            add("org.oscelot.blackboard.lti.services.Profile");
+            add("org.oscelot.blackboard.lti.services.Setting");
+            add("org.oscelot.blackboard.lti.services.OutcomesV1");
+        }
 
-  private Map<String,Service> services = null;
-  private B2Context b2Context = null;
-  private boolean listAll = true;
+    };
+    private Map<String, Service> services = null;
+    private B2Context b2Context = null;
+    private boolean listAll = true;
 
-  public ServiceList(B2Context b2Context, boolean listAll) {
+    public ServiceList(B2Context b2Context, boolean listAll) {
 
-    this.b2Context = b2Context;
-    this.listAll = listAll;
+        this.b2Context = b2Context;
+        this.listAll = listAll;
 
-  }
+    }
 
-  public List<Service> getList() {
+    public List<Service> getList() {
 
-    return getList(true);
-
-  }
-
-  public List<Service> getList(boolean includeProfile) {
-
-    return getList(includeProfile, true);
-
-  }
-
-  private List<Service> getList(boolean includeProfile, boolean fillEmpty) {
-
-    if ((this.services == null) || !fillEmpty) {
-      if (this.services == null) {
-        this.services = new TreeMap<String,Service>();
-      }
-      Map<String,String>settings = b2Context.getSettings();
-      String key;
-      String[] parts;
-      Service service;
-      for (Iterator<String> iter = settings.keySet().iterator(); iter.hasNext();) {
-        key = iter.next();
-        if (key.startsWith(Constants.SERVICE_PARAMETER_PREFIX + ".")) {
-          parts = key.split("\\.");
-          if ((parts.length == 2) && (includeProfile || (!parts[1].equals(Constants.RESOURCE_PROFILE)))) {
-            service = Service.getServiceFromClassName(this.b2Context, Service.getSettingValue(b2Context, parts[1], Constants.SERVICE_CLASS, ""));
-            if ((service != null) && (this.listAll || service.getIsEnabled().equals(Constants.DATA_TRUE))) {
-              this.services.put(parts[1], service);
+            if (this.services == null) {
+                this.services = new TreeMap<String, Service>();
+            Map<String, String> settings = b2Context.getSettings();
+            String key;
+            String[] parts;
+            Service service;
+            for (Iterator<String> iter = settings.keySet().iterator(); iter.hasNext();) {
+                key = iter.next();
+                if (key.startsWith(Constants.SERVICE_PARAMETER_PREFIX + ".")) {
+                    parts = key.split("\\.");
+                    if (parts.length == 2) {
+                        service = Service.getServiceFromClassName(this.b2Context, Service.getSettingValue(b2Context, parts[1], Constants.SERVICE_CLASS, ""));
+                        if ((service != null) && (this.listAll || service.getIsEnabled().equals(Constants.DATA_TRUE))) {
+                            this.services.put(parts[1], service);
+                        }
+                    }
+                }
             }
-          }
         }
-      }
-      if (this.services.isEmpty() && fillEmpty) {
-        boolean doSave = false;
-        String prefix;
-        for (Iterator<String> iter = STANDARD_SERVICES.keySet().iterator(); iter.hasNext();) {
-          key = iter.next();
-          service = Service.getServiceFromClassName(this.b2Context, key);
-          if (service != null) {
-            prefix = Constants.SERVICE_PARAMETER_PREFIX + "." + service.getId();
-            doSave |= setSettingIfDifferent(b2Context, prefix, Constants.DATA_FALSE);
-            doSave |= setSettingIfDifferent(b2Context, prefix + "." + Constants.TOOL_NAME, service.getName());
-            doSave |= setSettingIfDifferent(b2Context, prefix + "." + Constants.SERVICE_CLASS, key);
-            doSave |= setSettingIfDifferent(b2Context, prefix + "." + Constants.SERVICE_UNSIGNED, STANDARD_SERVICES.get(key));
-          }
-        }
-        if (doSave) {
-          b2Context.persistSettings();
-        }
-        getList(includeProfile, false);
-      }
+
+        List<Service> list = new ArrayList<Service>();
+        list.addAll(this.services.values());
+
+        return list;
+
     }
 
-    List<Service> list = new ArrayList<Service>();
-    list.addAll(this.services.values());
+    public boolean isService(String serviceId) {
 
-    return list;
+        getList();
 
-  }
+        return this.services.containsKey(serviceId);
 
-  public boolean isService(String serviceId) {
-
-    getList();
-
-    return this.services.containsKey(serviceId);
-
-  }
-
-  public void deleteService(String serviceId) {
-
-    getList();
-    if (this.services.containsKey(serviceId)) {
-      this.services.remove(serviceId);
-      this.persist();
     }
 
-  }
+    public static boolean isStandardService(String serviceId) {
 
-  public void clear() {
+        return STANDARD_SERVICES.contains(serviceId);
 
-    getList();
-    this.services.clear();
-
-  }
-
-  public void persist() {
-
-    this.b2Context.persistSettings();
-
-  }
-
-  private static boolean setSettingIfDifferent(final B2Context b2Context, final String key, final String value) {
-
-    final String oldValue = b2Context.getSetting(key);
-
-    if ((oldValue == null && value != null) || (oldValue != null && !oldValue.equals(value))) {
-      b2Context.setSetting(key, value);
-      return true;
     }
-    return false;
 
-  }
+    public void deleteService(String serviceId) {
+
+        getList();
+        if (this.services.containsKey(serviceId)) {
+            this.services.remove(serviceId);
+            this.persist();
+        }
+
+    }
+
+    public void clear() {
+
+        getList();
+        this.services.clear();
+
+    }
+
+    public void persist() {
+
+        this.b2Context.persistSettings();
+
+    }
 
 }

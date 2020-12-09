@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti.services;
 
 import java.util.List;
@@ -38,105 +38,112 @@ import com.spvsoftwareproducts.blackboard.utils.B2Context;
 import org.oscelot.blackboard.lti.resources.Resource;
 import org.oscelot.blackboard.lti.resources.Response;
 
-
 public class Controller extends HttpServlet {
 
-  private static final long serialVersionUID = -4671615534859545447L;
+    private static final long serialVersionUID = -4671615534859545447L;
 
-  private B2Context b2Context = null;
-  private Response response = null;
+    private B2Context b2Context = null;
+    private Response response = null;
 
-  protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    this.b2Context = new B2Context(request);
-    this.response = new Response(request, response);
-    boolean isGet;
-    if (request.getMethod().equals("GET")) {
-      isGet = true;
-      this.response.setAccept(request.getHeader("Accept"));
-    } else {
-      isGet = false;
-      this.response.setContentType(request.getContentType());
-    }
-    ServiceList serviceList = new ServiceList(this.b2Context, false);
-    List<Service> services = serviceList.getList();
-
-    boolean ok = false;
-    Service service = null;
-    List<Resource> resources;
-    Resource resource = null;
-    String path = request.getPathInfo();
-    String template;
-    for (Iterator<Service> iter = services.iterator(); iter.hasNext();) {
-      service = iter.next();
-      resources = service.getResources();
-      for (Iterator<Resource> iter2 = resources.iterator(); iter2.hasNext();) {
-        resource = iter2.next();
-        if ((isGet && (this.response.getAccept() != null) && !this.response.getAccept().contains("*/*") &&
-             !resource.getFormats().contains(this.response.getAccept())) ||
-            (!isGet && !resource.getFormats().contains(this.response.getContentType()))) {
-          continue;
+        this.b2Context = new B2Context(request);
+        this.response = new Response(request, response);
+        boolean isGet;
+        if (request.getMethod().equals("GET")) {
+            isGet = true;
+            this.response.setAccept(request.getHeader("Accept"));
+        } else {
+            isGet = false;
+            this.response.setContentType(request.getContentType());
         }
-        template = resource.getTemplate();
-        template = template.replaceAll("\\{[a-zA-Z_]+\\}", "[0-9a-zA-Z_:\\-]+");
-        template = template.replaceAll("\\{\\?[0-9a-zA-Z_\\-,]+\\}$", "");
-        if (path.matches(template)) {
-          ok = true;
-          break;
+        ServiceList serviceList = new ServiceList(this.b2Context, false);
+        List<Service> services = serviceList.getList();
+
+        boolean ok = false;
+        Service service = null;
+        List<Resource> resources;
+        Resource resource = null;
+        String path = request.getPathInfo();
+        String template;
+        String template1;
+        for (Iterator<Service> iter = services.iterator(); iter.hasNext();) {
+            service = iter.next();
+            resources = service.getResources();
+            for (Iterator<Resource> iter2 = resources.iterator(); iter2.hasNext();) {
+                resource = iter2.next();
+                if ((isGet && (this.response.getAccept() != null) && !this.response.getAccept().contains("*/*")
+                        && !resource.getFormats().contains(this.response.getAccept()))
+                        || (!isGet && !resource.getFormats().contains(this.response.getContentType()))) {
+                    continue;
+                }
+                template = resource.getTemplate();
+                template = template.replaceAll("\\{[a-zA-Z_]+\\}", "[0-9a-zA-Z_:\\-]+");
+                template = template.replaceAll("\\{\\?[0-9a-zA-Z_\\-,]+\\}$", "");
+                if (template.contains("(")) {
+                    template1 = template.replaceAll("[\\(\\)]", "");
+                    template = template.replaceAll("\\([0-9a-zA-Z_/]+\\)", "");
+                    ok = path.matches(template1) || path.matches(template);
+                    if (ok) {
+                        break;
+                    }
+                } else if (path.matches(template)) {
+                    ok = true;
+                    break;
+                }
+            }
+            if (ok) {
+                break;
+            }
         }
-      }
-      if (ok) {
-        break;
-      }
-    }
-    if (!ok) {
-      this.response.setCode(400);
-    } else {
-      readBody(service);
-      if (resource.getMethods().contains(request.getMethod())) {
-        resource.execute(this.b2Context, this.response);
-      } else {
-        this.response.setCode(405);
-      }
-    }
+        if (!ok) {
+            this.response.setCode(400);
+        } else {
+            readBody(service);
+            if (resource.getMethods().contains(request.getMethod())) {
+                resource.execute(this.b2Context, this.response);
+            } else {
+                this.response.setCode(405);
+            }
+        }
 
-    this.response.send();
+        this.response.send();
 
-  }
-
-  @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    processRequest(request, response);
-  }
-
-  @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    processRequest(request, response);
-  }
-
-  @Override
-  protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    processRequest(request, response);
-  }
-
-  @Override
-  protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    processRequest(request, response);
-  }
-
-  @Override
-  public String getServletInfo() {
-    return "LTI services";
-  }
-
-  private void readBody(Service service) {
-
-    service.setMessage(OAuthServlet.getMessage(this.b2Context.getRequest(), null));
-    try {
-      this.response.setData(service.getMessage().readBodyAsString());
-    } catch (IOException e) {
     }
 
-  }
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "LTI services";
+    }
+
+    private void readBody(Service service) {
+
+        service.setMessage(OAuthServlet.getMessage(this.b2Context.getRequest(), null));
+        try {
+            this.response.setData(service.getMessage().readBodyAsString());
+        } catch (IOException e) {
+        }
+
+    }
 
 }

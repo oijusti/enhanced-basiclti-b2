@@ -1,6 +1,6 @@
 <%--
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <%@page contentType="text/html" pageEncoding="UTF-8"
         import="java.io.PrintWriter,
-                com.spvsoftwareproducts.blackboard.utils.B2Context"
+        com.spvsoftwareproducts.blackboard.utils.B2Context"
         isErrorPage="true" %>
 <%@taglib uri="/bbNG" prefix="bbNG"%>
 <%
@@ -40,22 +40,22 @@
   <bbNG:pageHeader>
     <bbNG:pageTitleBar iconUrl="images/lti.gif" showTitleBar="true" title="${bundle['plugin.name']}: ${bundle['page.error.title']}"/>
   </bbNG:pageHeader>
-<bbNG:breadcrumbBar/>
-<p>
-${bundle['page.error.introduction']}
-</p>
-<!--//--><![CDATA[//><!--
-<%
-  if (isError) {
-	  if (strException != null) {
-		  out.println(strException);
-		  B2Context.log(true, "error.jsp: " +  strException);
-	  }
-// now display a stack trace of the exception
-    PrintWriter pw = new PrintWriter(out);
-    exception.printStackTrace(pw);
-  }
-%>
-//--><!]]>
+  <bbNG:breadcrumbBar/>
+  <p>
+    ${bundle['page.error.introduction']}
+  </p>
+  <!--//--><![CDATA[//><!--
+  <%
+    if (isError) {
+      if (strException != null) {
+        out.println(strException);
+        B2Context.log(true, "error.jsp: " +  strException);
+      }
+  // now display a stack trace of the exception
+      PrintWriter pw = new PrintWriter(out);
+      exception.printStackTrace(pw);
+    }
+  %>
+  //--><!]]>
   <bbNG:okButton />
 </bbNG:genericPage>

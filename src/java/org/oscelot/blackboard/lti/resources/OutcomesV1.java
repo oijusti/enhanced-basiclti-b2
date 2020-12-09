@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti.resources;
 
 import java.util.List;
@@ -28,54 +28,55 @@ import org.oscelot.blackboard.lti.services.Service;
 
 import com.spvsoftwareproducts.blackboard.utils.B2Context;
 
-
 public class OutcomesV1 extends Resource {
 
-  private static final String ID = "Outcomes.LTI1";
-  private static final String TEMPLATE = "service";
-  private static List<String> FORMATS = new ArrayList<String>() {{
-    add("application/vnd.ims.lti.v1.outcome+xml");
-  }};
+    private static final String ID = "Outcomes.LTI1";
+    private static final String TEMPLATE = "service";
+    private static List<String> FORMATS = new ArrayList<String>() {
+        {
+            add("application/vnd.ims.lti.v1.outcome+xml");
+        }
 
+    };
 
-  public OutcomesV1(Service service) {
+    public OutcomesV1(Service service) {
 
-    super(service);
-    this.methods.clear();
-    this.methods.add("POST");
-    this.variables.add("Outcomes.LTI1.url");
+        super(service);
+        this.methods.clear();
+        this.methods.add("POST");
+        this.variables.add("Outcomes.LTI1.url");
 
-  }
+    }
 
-  public String getId() {
+    public String getId() {
 
-    return ID;
+        return ID;
 
-  }
+    }
 
-  public String getTemplate() {
+    public String getTemplate() {
 
-    return TEMPLATE;
+        return TEMPLATE;
 
-  }
+    }
 
-  public List<String> getFormats() {
+    public List<String> getFormats() {
 
-    return Collections.unmodifiableList(FORMATS);
+        return Collections.unmodifiableList(FORMATS);
 
-  }
+    }
 
-  public void execute(B2Context b2Context, Response response) {
-  }
+    public void execute(B2Context b2Context, Response response) {
+    }
 
-  @Override
-  public String parseValue(String value) {
+    @Override
+    public String parseValue(String value) {
 
-    B2Context b2Context = this.getService().getB2Context();
-    value = value.replaceAll("\\$Outcomes.LTI1.url", b2Context.getServerUrl() + b2Context.getPath() + this.getPath());
+        B2Context b2Context = this.getService().getB2Context();
+        value = value.replaceAll("\\$Outcomes.LTI1.url", b2Context.getServerUrl() + b2Context.getPath() + this.getPath());
 
-    return value;
+        return value;
 
-  }
+    }
 
 }

@@ -1,6 +1,6 @@
 <%--
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,22 +19,23 @@
     Contact: stephen@spvsoftwareproducts.com
 --%>
 <%@page import="java.util.List,
-                java.util.ArrayList,
-                java.util.Iterator,
-                java.util.Date,
-                java.util.Calendar,
-                blackboard.portal.data.Module,
-                blackboard.servlet.data.ngui.CollapsibleListItem,
-                blackboard.platform.intl.BbLocale,
-                com.spvsoftwareproducts.blackboard.utils.B2Context,
-                org.oscelot.blackboard.lti.Tool,
-                org.oscelot.blackboard.lti.DashboardFeed,
-                org.oscelot.blackboard.lti.Constants,
-                org.oscelot.blackboard.lti.Utils"
+        java.util.ArrayList,
+        java.util.Iterator,
+        java.util.Date,
+        java.util.Calendar,
+        blackboard.portal.data.Module,
+        blackboard.servlet.data.ngui.CollapsibleListItem,
+        blackboard.platform.intl.BbLocale,
+        com.spvsoftwareproducts.blackboard.utils.B2Context,
+        org.oscelot.blackboard.lti.Tool,
+        org.oscelot.blackboard.lti.DashboardFeed,
+        org.oscelot.blackboard.lti.Constants,
+        org.oscelot.blackboard.lti.Utils"
         errorPage="../error.jsp"%>
 <%@taglib uri="/bbNG" prefix="bbNG" %>
 <%
   B2Context b2Context = new B2Context(request);
+  Utils.checkInheritSettings(b2Context);
 
   Module module = (Module)request.getAttribute("blackboard.portal.data.Module");
   String courseId = b2Context.getRequestParameter("course_id", "");
@@ -67,9 +68,14 @@
 
   List<CollapsibleListItem> listItems = feed.getItems();
 
-  String target = "_self";
-  if (!tool.getSplash().equals(Constants.DATA_TRUE) && !tool.getUserHasChoice()) {
-    target = tool.getWindowName();
+  String doLaunch1;
+  String doLaunch2;
+  if ((!tool.getSplash().equals(Constants.DATA_TRUE) && !tool.getUserHasChoice()) || !B2Context.getIsVersion(9, 1, 201404)) {
+    doLaunch1 = launchUrl;
+    doLaunch2 = "";
+  } else {
+    doLaunch1 = "#\" onclick=\"JavaScript: osc_BasicLTI_lightbox('" + launchText + "', '" + launchUrl;
+    doLaunch2 = "');";
   }
 
   BbLocale locale = new BbLocale();
@@ -77,101 +83,101 @@
 
   pageContext.setAttribute("bundle", b2Context.getResourceStrings());
   pageContext.setAttribute("dateString", dateString);
-  pageContext.setAttribute("launchUrl", launchUrl);
+  pageContext.setAttribute("doLaunch1", doLaunch1);
+  pageContext.setAttribute("doLaunch2", doLaunch2);
   pageContext.setAttribute("launchText", launchText);
   pageContext.setAttribute("iconUrl", feed.getIconUrl());
   pageContext.setAttribute("iconTitle", feed.getIconTitle());
   pageContext.setAttribute("content", feed.getContent());
-  pageContext.setAttribute("target", target);
 %>
 <bbNG:includedPage>
-<div class="eudModule">
-  <div class="eudModule-inner">
-    <div class="portletBlock" style="border-top-width: 0">
-<%
-  if (feed.getIconUrl() != null) {
-%>
-      <div style="text-align: center;">
-<%
-    if (allowLaunch) {
-%>
-        <a href="${launchUrl}" title="${launchText}"><img src="${iconUrl}" alt="${iconTitle}" /></a>
-<%
-    } else {
-%>
-        <img src="${iconUrl}" alt="${iconTitle}" />
-<%
-    }
-%>
+  <div class="eudModule">
+    <div class="eudModule-inner">
+      <div class="portletBlock" style="border-top-width: 0">
+        <%
+          if (feed.getIconUrl() != null) {
+        %>
+        <div style="text-align: center;">
+          <%
+              if (allowLaunch) {
+          %>
+          <a href="${doLaunch1}${doLaunch2}" title="${launchText}"><img src="${iconUrl}" alt="${iconTitle}" /></a>
+            <%
+                } else {
+            %>
+          <img src="${iconUrl}" alt="${iconTitle}" />
+          <%
+              }
+          %>
+        </div>
+        <%
+          }
+          if (listItems.size() > 0) {
+        %>
+        <ul class="stepPanels">
+          <%
+              pageContext.setAttribute("prefix", b2Context.getHandle());
+              CollapsibleListItem item;
+              String launch;
+              for (Iterator<CollapsibleListItem> iter=listItems.iterator(); iter.hasNext();) {
+                item = iter.next();
+                pageContext.setAttribute("item", item);
+                pageContext.setAttribute("id", b2Context.getHandle() + item.getId());
+                if (item.getUrl() != null) {
+                  launch = "&nbsp;<a href=\"" + doLaunch1 + "&amp;n=" + item.getId() + doLaunch2 + "\" style=\"display: inline;\"><img src=\"" + b2Context.getPath() + "images/external-ltr.png\" /></a>";
+                } else {
+                  launch = "";
+                }
+                pageContext.setAttribute("launch", launch);
+                if (!item.getExpandOnPageLoad()) {
+          %>
+          <li>
+            <div class="panelTitle">
+              <a style="display: inline;" onclick="document.getElementById('${id}').style.display = (document.getElementById('${id}').style.display == 'none') ? 'block' : 'none'; return false;"><img src="/images/db/p.gif" alt="Expand" align="absmiddle" border="0">&nbsp;${item.title}</a>${launch}
+            </div>
+            <div style="display: none;" class="stepPanel" id="${id}">
+              ${item.body}
+            </div>
+          </li>
+          <%
+                } else {
+          %>
+          <li>
+            <div class="panelTitle">
+              ${item.title}${launch}
+            </div>
+            <%
+                    if ((item.getBody() != null) && (item.getBody().length() > 0)) {
+            %>
+            <div style="display: block;" class="stepPanel">
+              ${item.body}
+            </div>
+            <%
+                    }
+            %>
+          </li>
+          <%
+                }
+          %>
+        </ul>
+        <%
+            }
+          } else {
+        %>
+        ${content}
+        <%
+          }
+          if (showLaunch) {
+        %>
+        <div class="blockGroups" style="text-align: center;">
+          <br />
+          <bbNG:button url="${doLaunch1}${doLaunch2}" label="${launchText}" />
+        </div>
+        <%
+          }
+        %>
       </div>
-<%
-  }
-  if (listItems.size() > 0) {
-%>
-  <ul class="stepPanels">
-<%
-    pageContext.setAttribute("prefix", b2Context.getHandle());
-    CollapsibleListItem item;
-    String launch;
-    for (Iterator<CollapsibleListItem> iter=listItems.iterator(); iter.hasNext();) {
-      item = iter.next();
-      pageContext.setAttribute("item", item);
-      pageContext.setAttribute("id", b2Context.getHandle() + item.getId());
-      if (item.getUrl() != null) {
-        launch = "&nbsp;<a href=\"" + launchUrl + "&amp;n=" + item.getId() + "\" style=\"display: inline;\"><img src=\"" + b2Context.getPath() + "images/external-ltr.png\" /></a>";
-      } else {
-        launch = "";
-      }
-      pageContext.setAttribute("launch", launch);
-      if (!item.getExpandOnPageLoad()) {
-%>
-    <li>
-     <div class="panelTitle">
-        <a href="#" style="display: inline;" onclick="document.getElementById('${id}').style.display=(document.getElementById('${id}').style.display == 'none')?'block':'none'; return false;"><img src="/images/db/p.gif" alt="Expand" align="absmiddle" border="0">&nbsp;${item.title}</a>${launch}
-      </div>
-      <div style="display: none;" class="stepPanel" id="${id}">
-        ${item.body}
-      </div>
-    </li>
-<%
-      } else {
-%>
-    <li>
-      <div class="panelTitle">
-        ${item.title}${launch}
-      </div>
-<%
-        if ((item.getBody() != null) && (item.getBody().length() > 0)) {
-%>
-      <div style="display: block;" class="stepPanel">
-        ${item.body}
-      </div>
-<%
-        }
-%>
-    </li>
-<%
-      }
-%>
-  </ul>
-<%
-    }
-  } else {
-%>
-${content}
-<%
-  }
-  if (showLaunch) {
-%>
-    <div class="blockGroups" style="text-align: center;">
-      <br />
-      <bbNG:button url="${launchUrl}" label="${launchText}" target="${target}" />
-    </div>
-<%
-  }
-%>
     </div>
   </div>
-</div>
-<div class="portletInfoFooter">${bundle['page.module.view.date']}: ${dateString}</div>
+  <div class="portletInfoFooter">${bundle['page.module.view.date']}: ${dateString}</div>
 </bbNG:includedPage>

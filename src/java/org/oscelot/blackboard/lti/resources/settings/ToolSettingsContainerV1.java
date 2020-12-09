@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,37 +17,38 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti.resources.settings;
 
 import com.google.gson.annotations.SerializedName;
 
-
 public class ToolSettingsContainerV1 {
 
-  private static final String CONTEXT = "http://purl.imsglobal.org/ctx/lti/v2/ToolSettings";
+    private static final String CONTEXT = "http://purl.imsglobal.org/ctx/lti/v2/ToolSettings";
 
-  @SerializedName("@context") private String context;
-  @SerializedName("@graph") private ToolSettingsV1[] graph;
+    @SerializedName("@context")
+    private String context;
+    @SerializedName("@graph")
+    private ToolSettingsV1[] graph;
 
-  public ToolSettingsContainerV1() {
-    this.context = CONTEXT;
-  }
+    public ToolSettingsContainerV1() {
+        this.context = CONTEXT;
+    }
 
-  public String getContext() {
-    return this.context;
-  }
+    public String getContext() {
+        return this.context;
+    }
 
-  public void setContext(String context) {
-    this.context = context;
-  }
+    public void setContext(String context) {
+        this.context = context;
+    }
 
-  public ToolSettingsV1[] getGraph() {
-    return this.graph.clone();
-  }
+    public ToolSettingsV1[] getGraph() {
+        return this.graph.clone();
+    }
 
-  public void setGraph(ToolSettingsV1[] graph) {
-    this.graph = graph.clone();
-  }
+    public void setGraph(ToolSettingsV1[] graph) {
+        this.graph = graph.clone();
+    }
 
 }

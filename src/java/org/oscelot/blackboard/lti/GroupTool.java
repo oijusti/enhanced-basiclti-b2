@@ -1,6 +1,6 @@
 /*
     basiclti - Building Block to provide support for Basic LTI
-    Copyright (C) 2016  Stephen P Vickers
+    Copyright (C) 2018  Stephen P Vickers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     Contact: stephen@spvsoftwareproducts.com
-*/
+ */
 package org.oscelot.blackboard.lti;
 
 import blackboard.data.navigation.NavigationItem.NavigationType;
@@ -26,63 +26,62 @@ import blackboard.data.navigation.Mask;
 
 import com.spvsoftwareproducts.blackboard.utils.B2Context;
 
-
 public final class GroupTool extends Placement {
 
-  public GroupTool(B2Context b2Context, Tool tool) {
+    public GroupTool(B2Context b2Context, Tool tool) {
 
-    super(b2Context, tool, "group", b2Context.getResourceString("tool.group.suffix"),
-       "tool.jsp?course_id=@X@course.pk_string@X@&group_id=@X@group.pk_string@X@", Constants.TOOL_GROUPTOOL);
-    if (tool.getHasGroupTool().equals(Constants.DATA_TRUE)) {
-      if (this.navApplication == null) {
-        this.createNavigationApplication(false);
-        if (this.navApplication != null) {
-          this.navApplication.setCourseGroupEnabled(true);
-          this.navApplication.setOrgGroupEnabled(true);
+        super(b2Context, tool, "group", b2Context.getResourceString("tool.group.suffix"),
+                "tool.jsp?course_id=@X@course.pk_string@X@&group_id=@X@group.pk_string@X@", Constants.TOOL_GROUPTOOL);
+        if (tool.getHasGroupTool().equals(Constants.DATA_TRUE)) {
+            if (this.navApplication == null) {
+                this.createNavigationApplication(false);
+                if (this.navApplication != null) {
+                    this.navApplication.setCourseGroupEnabled(true);
+                    this.navApplication.setOrgGroupEnabled(true);
+                }
+            }
+            if (this.navApplication == null) {
+                this.delete();
+            } else if (this.navItem == null) {
+                this.createNavigationItem();
+                if (this.navItem == null) {
+                    this.delete();
+                }
+            } else {
+                this.setName(tool.getName());
+                this.setDescription(tool.getDescription());
+                this.setIsAvailable();
+            }
+        } else if (!tool.getIsEnabled().equals(Constants.DATA_TRUE)
+                || (this.navApplication != null) || (this.navItem != null)) {
+            this.delete();
         }
-      }
-      if (this.navApplication == null) {
-        this.delete();
-      } else if (this.navItem == null) {
-        this.createNavigationItem();
-        if (this.navItem == null) {
-          this.delete();
-        }
-      } else {
-        this.setName(tool.getName());
-        this.setDescription(tool.getDescription());
-        this.setIsAvailable();
-      }
-    } else if (!tool.getIsEnabled().equals(Constants.DATA_TRUE) ||
-               (this.navApplication != null) || (this.navItem != null)) {
-      this.delete();
+        this.persist();
+
     }
-    this.persist();
 
-  }
+    @Override
+    public void setIsAvailable(boolean isAvailable) {
 
-  @Override
-  public void setIsAvailable(boolean isAvailable) {
+        super.setIsAvailable(isAvailable);
+        this.navApplication.setIsCourseTool(isAvailable);
+        this.navApplication.setIsOrgTool(isAvailable);
+        this.navApplication.setIsGroupTool(isAvailable);
+        this.navApplication.setCourseGroupEnabled(isAvailable);
+        this.navApplication.setOrgGroupEnabled(isAvailable);
 
-    super.setIsAvailable(isAvailable);
-    this.navApplication.setIsCourseTool(isAvailable);
-    this.navApplication.setIsOrgTool(isAvailable);
-    this.navApplication.setIsGroupTool(isAvailable);
-    this.navApplication.setCourseGroupEnabled(isAvailable);
-    this.navApplication.setOrgGroupEnabled(isAvailable);
+    }
 
-  }
+    @Override
+    protected void createNavigationItem() {
 
-  @Override
-  protected void createNavigationItem() {
+        super.createNavigationItem();
+        this.navItem.setFamily("agroup");
+        this.navItem.setNavigationType(NavigationType.GROUP);
+        this.navItem.setComponentType(ComponentType.CHILD);
+        this.navItem.setIsEnabledMask(new Mask(3));
+        this.navItem.setEntitlementUid("course.VIEW");
 
-    super.createNavigationItem();
-    this.navItem.setFamily("agroup");
-    this.navItem.setNavigationType(NavigationType.GROUP);
-    this.navItem.setComponentType(ComponentType.CHILD);
-    this.navItem.setIsEnabledMask(new Mask(3));
-    this.navItem.setEntitlementUid("course.VIEW");
-
-  }
+    }
 
 }

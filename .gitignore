@@ -11,3 +11,4 @@ out
 *.iws
 
 .vagrant
+.DS_Store
